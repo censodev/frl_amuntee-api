@@ -1,0 +1,11 @@
+server:
+  port: 8001
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://45.77.250.236:3306/amuntee_account
+    username: app
+    password: app@0964603264
