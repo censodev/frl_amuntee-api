@@ -74,6 +74,7 @@ public class AuthController {
             user.setFullname(request.getFullname());
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setStatus(1);
 
             switch (role) {
                 case 1:
