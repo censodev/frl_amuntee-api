@@ -1,7 +1,6 @@
 package com.amuntee.gateway.config;
 
-import com.amuntee.common.auth.JwtConfig;
-import io.netty.handler.codec.http.HttpMethod;
+import com.amuntee.common.auth.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
     @Autowired
-    private JwtConfig jwtConfig;
+    private JwtProvider jwtProvider;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -28,19 +27,19 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                         .exceptionHandling().authenticationEntryPoint((req, rsp, e) -> rsp.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
                         // Add a filter to validate the tokens with every request
-                        .addFilterAfter(new JwtTokenAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
+                        .addFilterAfter(new JwtTokenAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 // authorization requests config
                 .authorizeRequests()
                         // allow all who are accessing "auth" service
-                        .antMatchers(String.valueOf(HttpMethod.POST), jwtConfig.getUri()).permitAll()
+                        .antMatchers(jwtProvider.getUri()).permitAll()
                         // must be an admin if trying to access admin area (authentication is also required here)
-                        .antMatchers("/gallery" + "/admin/**").hasRole("ADMIN")
+                        .antMatchers("/api/gallery" + "/api/admin/**").hasRole("ADMIN")
                         // Any other request must be authenticated
                         .anyRequest().authenticated();
     }
 
     @Bean
-    public JwtConfig jwtConfig() {
-        return new JwtConfig();
+    public JwtProvider jwtProvider() {
+        return new JwtProvider();
     }
 }

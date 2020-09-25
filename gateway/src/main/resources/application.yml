@@ -1,15 +1,11 @@
 server:
   port: 8000
 
-spring:
-  cloud:
-    gateway:
-      routes:
-        - id: auth_route
-          uri: http://127.0.0.1:8001/
-          predicates:
-            - Path=/api/auth/**
-        - id: business_route
-          uri: http://127.0.0.1:8002/
-          predicates:
-            - Path=/api/business/**
+zuul:
+  routes:
+    auth:
+      url: http://localhost:8001/api/auth
+      path: /api/auth/**
+    business:
+      url: http://localhost:8002/api/business
+      path: /api/business/**
