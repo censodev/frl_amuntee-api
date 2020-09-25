@@ -1,5 +1,6 @@
 package com.amuntee.common.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,8 @@ public class JwtProvider {
     @Value("${security.jwt.secret:JwtSecretKey}")
     private String secret;
 
+    private Logger logger = Logger.getLogger(this.getClass().getName());
+
     public String generateToken(Credentials credentials) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
@@ -46,22 +49,23 @@ public class JwtProvider {
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
-        return (Credentials) claims.get("credentials");
+        var credentials = new ObjectMapper().convertValue(claims.get("credentials"), Credentials.class);
+        logger.info(credentials.toString());
+        return credentials;
     }
 
     public boolean validateToken(String authToken) {
-        var log = Logger.getLogger(this.getClass().getName());
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
             return true;
         } catch (MalformedJwtException ex) {
-            log.error("Invalid JWT token");
+            logger.error("Invalid JWT token");
         } catch (ExpiredJwtException ex) {
-            log.error("Expired JWT token");
+            logger.error("Expired JWT token");
         } catch (UnsupportedJwtException ex) {
-            log.error("Unsupported JWT token");
+            logger.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
-            log.error("JWT claims string is empty.");
+            logger.error("JWT claims string is empty.");
         }
         return false;
     }

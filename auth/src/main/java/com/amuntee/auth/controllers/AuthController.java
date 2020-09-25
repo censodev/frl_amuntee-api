@@ -34,11 +34,6 @@ public class AuthController {
     @Autowired
     UserRepository userRepository;
 
-    @GetMapping("hello")
-    public String hello() {
-        return "hello";
-    }
-
     @PostMapping("login")
     public String authenticate(@RequestBody LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(

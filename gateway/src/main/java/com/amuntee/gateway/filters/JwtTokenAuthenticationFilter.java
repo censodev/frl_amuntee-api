@@ -1,6 +1,7 @@
 package com.amuntee.gateway.filters;
 
 import com.amuntee.common.auth.JwtProvider;
+import io.jsonwebtoken.Jwts;
 import org.jboss.logging.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,7 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
@@ -48,12 +48,14 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         // 3. Get the token
         String token = header.replace(jwtProvider.getPrefix(), "");
         logger.info(token);
-        if (jwtProvider.validateToken(token)) {
-            var authorities = jwtProvider.getCredentials(token)
+        var isValidToken = jwtProvider.validateToken(token);
+        if (isValidToken) {
+            var credentials = jwtProvider.getCredentials(token);
+            var authorities = credentials
                     .getAuthorities()
                     .stream().map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
-            var username = jwtProvider.getCredentials(token).getUsername();
+            var username = credentials.getUsername();
 
             // 4. Create auth object
             // UsernamePasswordAuthenticationToken: A built-in object, used by spring to represent the current authenticated / being authenticated user.
@@ -61,6 +63,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
             Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
         } else {
+            logger.error("failed on set user authentication");
             SecurityContextHolder.clearContext();
         }
 
