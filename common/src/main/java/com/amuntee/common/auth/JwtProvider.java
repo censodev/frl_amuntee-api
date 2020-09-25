@@ -29,34 +29,24 @@ public class JwtProvider {
     @Value("${security.jwt.secret:JwtSecretKey}")
     private String secret;
 
-    public String generateToken(String username, List<String> authorities) {
+    public String generateToken(Credentials credentials) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
         return Jwts.builder()
-                .setSubject(username)
-                .claim("authorities", authorities)
+                .setSubject(credentials.getCode())
+                .claim("credentials", credentials)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
     }
 
-    public String getUsername(String token) {
+    public Credentials getCredentials(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
                 .getBody();
-
-        return String.valueOf(claims.getSubject());
-    }
-
-    public List<String> getAuthorities(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
-
-        return (List<String>) claims.get("authorities");
+        return (Credentials) claims.get("credentials");
     }
 
     public boolean validateToken(String authToken) {

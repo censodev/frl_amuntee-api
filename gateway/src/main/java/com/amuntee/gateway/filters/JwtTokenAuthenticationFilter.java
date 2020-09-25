@@ -31,7 +31,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
         // 2. validate the header and check the prefix
         if(header == null || !header.startsWith(jwtProvider.getPrefix())) {
-            chain.doFilter(request, response);  		// If not valid, go to the next filter.
+            chain.doFilter(request, response);
             return;
         }
 
@@ -44,11 +44,13 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         // 3. Get the token
         String token = header.replace(jwtProvider.getPrefix(), "");
         if (jwtProvider.validateToken(token)) {
-            var authorities = jwtProvider.getAuthorities(token)
-                    .stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-            var username = jwtProvider.getUsername(token);
+            var authorities = jwtProvider.getCredentials(token)
+                    .getAuthorities()
+                    .stream().map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+            var username = jwtProvider.getCredentials(token).getUsername();
 
-            // 5. Create auth object
+            // 4. Create auth object
             // UsernamePasswordAuthenticationToken: A built-in object, used by spring to represent the current authenticated / being authenticated user.
             // It needs a list of authorities, which has type of GrantedAuthority interface, where SimpleGrantedAuthority is an implementation of that interface
             Authentication auth = new UsernamePasswordAuthenticationToken(username, null, authorities);
@@ -56,8 +58,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         } else {
             SecurityContextHolder.clearContext();
         }
-
-
+        
         // go to the next filter in the filter chain
         chain.doFilter(request, response);
     }

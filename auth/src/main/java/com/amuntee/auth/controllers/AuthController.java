@@ -1,8 +1,11 @@
 package com.amuntee.auth.controllers;
 
+import com.amuntee.auth.models.CustomUserDetails;
 import com.amuntee.auth.models.User;
 import com.amuntee.auth.repositories.UserRepository;
 import com.amuntee.auth.requests.LoginRequest;
+import com.amuntee.auth.requests.RegisterRequest;
+import com.amuntee.common.auth.Credentials;
 import com.amuntee.common.auth.JwtProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,16 +51,38 @@ public class AuthController {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-        var token = jwtProvider.generateToken(request.getUsername(), authorities);
+        var user = ((CustomUserDetails) authentication.getPrincipal()).getUser();
+        var credentials = new Credentials();
+        credentials.setUid(user.getId());
+        credentials.setCode(user.getCode());
+        credentials.setUsername(user.getUsername());
+        credentials.setFullname(user.getFullname());
+        credentials.setAuthorities(authorities);
+        var token = jwtProvider.generateToken(credentials);
         return String.format("%s%s", jwtProvider.getPrefix(), token);
     }
 
     @PostMapping("register")
-    public boolean register(@RequestBody  LoginRequest request) {
+    public boolean register(@RequestBody RegisterRequest request,
+                            @RequestParam int role) {
         try {
+            if (!request.getConfirmPassword().equals(request.getPassword()))
+                throw new Exception("Password != Confirm password");
+
             var user = new User();
+            user.setCode(request.getCode());
+            user.setFullname(request.getFullname());
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+            switch (role) {
+                case 1:
+                    user.setRoleId(1); break;
+                case 2:
+                default:
+                    user.setRoleId(2); break;
+            }
+
             userRepository.save(user);
         } catch (Exception ex) {
             log.error(ex.getMessage());
