@@ -38,6 +38,14 @@ public class Product {
     private Integer supplierId;
 
     @Basic
+    @Column(name = "shipping_time", length = 150)
+    private String shippingTime;
+
+    @Basic
+    @Column(name = "processing_time", length = 150)
+    private String processingTime;
+
+    @Basic
     @Column(name = "created_at", nullable = true)
     private Timestamp createdAt;
 
