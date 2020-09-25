@@ -1,6 +1,7 @@
 package com.amuntee.gateway.filters;
 
 import com.amuntee.common.auth.JwtProvider;
+import org.jboss.logging.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
 
+    private Logger logger;
+
     public JwtTokenAuthenticationFilter(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
+        this.logger = Logger.getLogger(this.getClass().getName());
     }
 
     @Override
@@ -43,6 +47,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
         // 3. Get the token
         String token = header.replace(jwtProvider.getPrefix(), "");
+        logger.info(token);
         if (jwtProvider.validateToken(token)) {
             var authorities = jwtProvider.getCredentials(token)
                     .getAuthorities()
