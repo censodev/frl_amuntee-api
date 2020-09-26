@@ -6,10 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import com.amuntee.gateway.filters.JwtTokenAuthenticationFilter;
-import javax.servlet.http.HttpServletResponse;
 
 @EnableWebSecurity
 public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
@@ -25,7 +23,7 @@ public class SecurityTokenConfig extends WebSecurityConfigurerAdapter {
                         // allow all who are accessing "auth" service
                         .antMatchers(jwtProvider.getUri()).permitAll()
                         // must be an admin if trying to access admin area (authentication is also required here)
-                        .antMatchers("/api/admin/**").hasRole("ADMIN")
+                        .antMatchers("/api/user/**").hasRole("ADMIN")
                         // Any other request must be authenticated
                         .anyRequest().authenticated();
     }

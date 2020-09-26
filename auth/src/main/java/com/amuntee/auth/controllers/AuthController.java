@@ -3,8 +3,8 @@ package com.amuntee.auth.controllers;
 import com.amuntee.auth.models.CustomUserDetails;
 import com.amuntee.auth.models.User;
 import com.amuntee.auth.repositories.UserRepository;
-import com.amuntee.auth.requests.LoginRequest;
-import com.amuntee.auth.requests.RegisterRequest;
+import com.amuntee.auth.requests.AuthLoginRequest;
+import com.amuntee.auth.requests.AuthRegisterRequest;
 import com.amuntee.common.auth.Credentials;
 import com.amuntee.common.auth.JwtProvider;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class AuthController {
     UserRepository userRepository;
 
     @PostMapping("login")
-    public String authenticate(@RequestBody LoginRequest request) {
+    public String authenticate(@RequestBody AuthLoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -58,7 +58,7 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public boolean register(@RequestBody RegisterRequest request,
+    public boolean register(@RequestBody AuthRegisterRequest request,
                             @RequestParam int role) {
         try {
             if (!request.getConfirmPassword().equals(request.getPassword()))
@@ -69,6 +69,8 @@ public class AuthController {
             user.setFullname(request.getFullname());
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setPhone(request.getPhone());
+            user.setEmail(request.getEmail());
             user.setStatus(1);
 
             switch (role) {

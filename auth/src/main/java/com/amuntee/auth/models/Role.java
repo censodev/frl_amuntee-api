@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class Role {
     @Id
     @GeneratedValue
-    private Long id;
+    private int id;
 
     private String name;
 
