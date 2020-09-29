@@ -3,15 +3,16 @@ package com.amuntee.business.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "orders", schema = "amuntee_business", catalog = "")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Order {
     @Id
     @Column(name = "id", nullable = false)
@@ -19,46 +20,42 @@ public class Order {
     private int id;
 
     @Basic
-    @Column(name = "shopify_code", nullable = true, length = 50)
-    private String shopifyCode;
+    @Column(name = "code", nullable = true, length = 50)
+    private String code;
 
     @Basic
-    @Column(name = "shopify_date", nullable = true)
-    private Timestamp shopifyDate;
+    @Column(name = "name", nullable = true, length = 50)
+    private String name;
 
     @Basic
-    @Column(name = "shopify_product_code", nullable = true, length = 20)
-    private String shopifyProductCode;
+    @Column(name = "sub_total_price", nullable = true, precision = 0)
+    private Double subTotalPrice;
 
     @Basic
-    @Column(name = "shopify_quantity", nullable = true)
-    private Integer shopifyQuantity;
-
-    @Basic
-    @Column(name = "shopify_seller_id", nullable = true, length = 2)
-    private String shopifySellerId;
-
-    @Basic
-    @Column(name = "shopify_price", nullable = true, precision = 0)
-    private Double shopifyPrice;
-
-    @Basic
-    @Column(name = "paygate_id", nullable = true, length = 100)
-    private String paygateId;
+    @Column(name = "total_price", nullable = true, precision = 0)
+    private Double totalPrice;
 
     @Basic
     @Column(name = "paygate_name", nullable = true, length = 45)
     private String paygateName;
 
     @Basic
-    @Column(name = "shopify_status", nullable = true, length = 45)
-    private String shopifyStatus;
+    @Column(name = "financial_status", nullable = true, length = 45)
+    private String financialStatus;
 
     @Basic
-    @Column(name = "shopify_design_code", nullable = true, length = 20)
-    private String shopifyDesignCode;
+    @Column(name = "fulfillment_status", nullable = true, length = 45)
+    private String fulfillmentStatus;
 
     @Basic
     @Column(name = "created_at", nullable = true)
-    private Timestamp createdAt;
+    private String createdAt;
+
+    @Basic
+    @Column(name = "updated_at", nullable = true)
+    private String updatedAt;
+
+    @Basic
+    @Column(name = "close_at", nullable = true)
+    private String closedAt;
 }

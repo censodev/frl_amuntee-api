@@ -9,3 +9,8 @@ spring:
     url: jdbc:mysql://45.77.250.236:3306/amuntee_business
     username: app
     password: app@0964603264
+
+shopify:
+  host: https://chipchipglobal2.myshopify.com/admin/api/2020-07/
+  api-key: 424a9dd4131083f558d723606d54fc1c
+  password: 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
