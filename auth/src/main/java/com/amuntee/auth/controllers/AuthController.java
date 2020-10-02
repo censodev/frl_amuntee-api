@@ -35,7 +35,7 @@ public class AuthController {
     UserRepository userRepository;
 
     @PostMapping("login")
-    public String authenticate(@RequestBody AuthLoginRequest request) {
+    public Object authenticate(@RequestBody AuthLoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -53,8 +53,10 @@ public class AuthController {
         credentials.setUsername(user.getUsername());
         credentials.setFullname(user.getFullname());
         credentials.setAuthorities(authorities);
-        var token = jwtProvider.generateToken(credentials);
-        return String.format("%s%s", jwtProvider.getPrefix(), token);
+        return new Object() {
+            public final String token = jwtProvider.generateToken(credentials);
+            public final Credentials user = credentials;
+        };
     }
 
     @PostMapping("register")
