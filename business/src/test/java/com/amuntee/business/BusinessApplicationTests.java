@@ -35,7 +35,9 @@ class BusinessApplicationTests {
 
 	@Test
 	void testSyncShopifyOrders() {
-		orderService.syncShopifyOrder(true);
+//		var rs = orderService.syncShopifyOrders(false);
+		var rs = orderService.syncShopifyOrders(true);
+		log.info(String.valueOf(rs));
 	}
 
 	@Test
@@ -45,6 +47,12 @@ class BusinessApplicationTests {
 		log.info(skuUtil.getProductCode());
 		log.info(skuUtil.getSellerCode());
 		log.info(skuUtil.getDesignCode());
+	}
+
+	@Test
+	void testOrdersStatistic() {
+		var rs = orderService.listOrders(0, 20, "asc", "code");
+		log.info(rs.toString());
 	}
 
 }

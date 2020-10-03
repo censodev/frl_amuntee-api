@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -43,7 +45,9 @@ public class ShopifyServiceImpl implements ShopifyService {
                 .append("since_id=").append(sinceId);
         var orders = shopifyHttp.getForObject(url.toString(), ShopifyOrderList.class);
         assert orders != null;
-        return orders.getOrders();
+        return orders.getOrders().stream()
+                .sorted(Comparator.comparing(ShopifyOrder::getCode))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -54,6 +58,8 @@ public class ShopifyServiceImpl implements ShopifyService {
         var paymentTransactions = shopifyHttp
                 .getForObject(url.toString(), ShopifyPaymentTransactionList.class);
         assert paymentTransactions != null;
-        return paymentTransactions.getTransactions();
+        return paymentTransactions.getTransactions().stream()
+                .sorted(Comparator.comparing(ShopifyPaymentTransaction::getCode))
+                .collect(Collectors.toList());
     }
 }

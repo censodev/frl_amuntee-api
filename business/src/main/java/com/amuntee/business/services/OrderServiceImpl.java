@@ -1,5 +1,6 @@
 package com.amuntee.business.services;
 
+import com.amuntee.business.dto.OrderDTO;
 import com.amuntee.business.dto.ShopifyOrder;
 import com.amuntee.business.dto.ShopifyPaymentTransaction;
 import com.amuntee.business.models.Order;
@@ -9,9 +10,12 @@ import com.amuntee.business.repositories.OrderProductRepository;
 import com.amuntee.business.repositories.OrderRepository;
 import com.amuntee.business.repositories.PaymentTransactionRepository;
 import com.amuntee.business.utils.SkuUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,11 +39,14 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private PaymentTransactionRepository paymentTransactionRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
-    public boolean syncShopifyOrder(boolean testMode) {
+    public boolean syncShopifyOrders(boolean testMode) {
         try {
-            var lastOrder = orderRepository.findTopByOrderByIdDesc();
-            var lastPaymentTransaction = paymentTransactionRepository.findTopByOrderByIdDesc();
+            var lastOrder = orderRepository.findTopByOrderByCodeDesc();
+            var lastPaymentTransaction = paymentTransactionRepository.findTopByOrderByCodeDesc();
 
             var sinceId = lastOrder != null ? lastOrder.getCode() : "";
             var shopifyOrders = shopifyService.fetchListOrder(sinceId);
@@ -49,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
 
             saveOrders(shopifyOrders, testMode);
             saveOrderProducts(shopifyOrders, testMode);
-            saveShopifyPaymentTransactions(shopifyPaymentTransactions, testMode);
+            savePaymentTransactions(shopifyPaymentTransactions, testMode);
 
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -58,22 +65,48 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
+    @Override
+    public List<OrderDTO> listOrders(int page, int limit, String order, String orderBy) {
+        var sort = order.equals("asc")
+                ? Sort.by(orderBy).ascending()
+                : Sort.by(orderBy).descending();
+        var orders = orderRepository.findAll(PageRequest.of(page, limit, sort)).getContent();
+        var type = new TypeReference<List<OrderDTO>>() {};
+
+        return objectMapper.convertValue(orders, type).stream()
+                .peek(orderDTO -> {
+                    var products = orderProductRepository.findByOrderCode(orderDTO.getCode());
+                    var paymentTransactions = paymentTransactionRepository
+                            .findByOrderCode(orderDTO.getCode());
+                    orderDTO.setProducts(products);
+                    orderDTO.setPaymentTransactions(paymentTransactions);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderDTO getOrderDetails(String orderCode) {
+        return null;
+    }
+
     private void saveOrders(List<ShopifyOrder> shopifyOrders, boolean testMode) {
         if (shopifyOrders.isEmpty())
             return;
         var orders = shopifyOrders.stream()
-                .map(shopifyOrder -> new Order() {{
-                    setCode(shopifyOrder.getCode());
-                    setName(shopifyOrder.getName());
-                    setPaygateName(shopifyOrder.getPaygateName());
-                    setSubTotalPrice(shopifyOrder.getSubTotalPrice());
-                    setTotalPrice(shopifyOrder.getTotalPrice());
-                    setFinancialStatus(shopifyOrder.getFinancialStatus());
-                    setFulfillmentStatus(shopifyOrder.getFulfillmentStatus());
-                    setCreatedAt(shopifyOrder.getCreatedAt());
-                    setUpdatedAt(shopifyOrder.getUpdatedAt());
-                    setClosedAt(shopifyOrder.getClosedAt());
-                }})
+                .map(shopifyOrder -> {
+                    var order = new Order();
+                    order.setCode(shopifyOrder.getCode());
+                    order.setName(shopifyOrder.getName());
+                    order.setPaygateName(shopifyOrder.getPaygateName());
+                    order.setSubTotalPrice(shopifyOrder.getSubTotalPrice());
+                    order.setTotalPrice(shopifyOrder.getTotalPrice());
+                    order.setFinancialStatus(shopifyOrder.getFinancialStatus());
+                    order.setFulfillmentStatus(shopifyOrder.getFulfillmentStatus());
+                    order.setCreatedAt(shopifyOrder.getCreatedAt());
+                    order.setUpdatedAt(shopifyOrder.getUpdatedAt());
+                    order.setClosedAt(shopifyOrder.getClosedAt());
+                    return order;
+                })
                 .collect(Collectors.toList());
         log.info(orders.toString());
 
@@ -118,19 +151,21 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    private void saveShopifyPaymentTransactions(List<ShopifyPaymentTransaction> shopifyPaymentTransactions, boolean testMode) {
+    private void savePaymentTransactions(List<ShopifyPaymentTransaction> shopifyPaymentTransactions, boolean testMode) {
         if (shopifyPaymentTransactions.isEmpty())
             return;
         var paymentTransactions = shopifyPaymentTransactions.stream()
-                .map(shopifyPaymentTransaction -> new PaymentTransaction() {{
-                    setCode(shopifyPaymentTransaction.getCode());
-                    setType(shopifyPaymentTransaction.getType());
-                    setSourceType(shopifyPaymentTransaction.getSourceType());
-                    setAmount(shopifyPaymentTransaction.getAmount());
-                    setFee(shopifyPaymentTransaction.getFee());
-                    setNet(shopifyPaymentTransaction.getNet());
-                    setOrderCode(shopifyPaymentTransaction.getOrderCode());
-                }})
+                .map(shopifyPaymentTransaction -> {
+                    var trans = new PaymentTransaction();
+                    trans.setCode(shopifyPaymentTransaction.getCode());
+                    trans.setType(shopifyPaymentTransaction.getType());
+                    trans.setSourceType(shopifyPaymentTransaction.getSourceType());
+                    trans.setAmount(shopifyPaymentTransaction.getAmount());
+                    trans.setFee(shopifyPaymentTransaction.getFee());
+                    trans.setNet(shopifyPaymentTransaction.getNet());
+                    trans.setOrderCode(shopifyPaymentTransaction.getOrderCode());
+                    return trans;
+                })
                 .collect(Collectors.toList());
         log.info(paymentTransactions.toString());
         if (!testMode) {
