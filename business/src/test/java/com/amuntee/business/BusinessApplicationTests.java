@@ -1,9 +1,8 @@
 package com.amuntee.business;
 
 import com.amuntee.business.services.OrderService;
-import com.amuntee.business.services.OrderShopifyService;
+import com.amuntee.business.services.ShopifyService;
 import com.amuntee.business.utils.SkuUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @Slf4j
 class BusinessApplicationTests {
 	@Autowired
-	OrderShopifyService orderShopifyService;
+	ShopifyService shopifyService;
 
 	@Autowired
 	OrderService orderService;
@@ -23,15 +22,20 @@ class BusinessApplicationTests {
 	}
 
 	@Test
-	void testFetchShopifyAPI() {
-		var res = orderShopifyService.getListOrder(null);
+	void testFetchShopifyOrder() {
+		var res = shopifyService.fetchListOrder("");
+		log.info(res.toString());
+	}
+
+	@Test
+	void testFetchShopifyPaymentTransaction() {
+		var res = shopifyService.fetchListPaymentTransaction("");
 		log.info(res.toString());
 	}
 
 	@Test
 	void testSyncShopifyOrders() {
-		var rs = orderService.syncShopifyOrder();
-		log.info("" + rs);
+		orderService.syncShopifyOrder(true);
 	}
 
 	@Test

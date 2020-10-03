@@ -1,5 +1,5 @@
 package com.amuntee.business.services;
 
 public interface OrderService {
-    boolean syncShopifyOrder();
+    boolean syncShopifyOrder(boolean testMode);
 }

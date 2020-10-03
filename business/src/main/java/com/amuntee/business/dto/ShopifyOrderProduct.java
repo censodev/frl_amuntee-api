@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductShopify {
+public class ShopifyOrderProduct {
+    @JsonProperty("title")
+    private String title;
+
     @JsonProperty("sku")
     private String sku;
 

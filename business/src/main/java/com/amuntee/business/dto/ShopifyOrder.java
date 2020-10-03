@@ -6,15 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
 import java.util.List;
 
 @Data
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderShopify {
+public class ShopifyOrder {
     @JsonProperty("id")
     private String code;
 
@@ -37,7 +35,7 @@ public class OrderShopify {
     private String paygateName;
 
     @JsonProperty("line_items")
-    private List<ProductShopify> products;
+    private List<ShopifyOrderProduct> products;
 
     @JsonProperty("created_at")
     private String createdAt;
