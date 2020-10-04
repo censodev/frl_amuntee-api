@@ -8,7 +8,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "orders_products", schema = "amuntee_business", catalog = "")
+@Table(name = "orders_products")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +28,7 @@ public class OrderProduct {
     private String productCode;
 
     @Basic
-    @Column(name = "title", length = 100)
+    @Column(name = "title", length = 300)
     private String title;
 
     @Basic

@@ -9,7 +9,6 @@ import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,7 +23,7 @@ public class JwtProvider {
     @Value("${security.jwt.prefix:Bearer }")
     private String prefix;
 
-    @Value("${security.jwt.expiration:#{24*60*60}}")
+    @Value("${security.jwt.expiration:#{24*60*60*1000}}")
     private int expiration;
 
     @Value("${security.jwt.secret:JwtSecretKey}")

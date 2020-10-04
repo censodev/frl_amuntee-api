@@ -6,6 +6,6 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://45.77.250.236:3306/amuntee_account
+    url: jdbc:mysql://45.77.250.236:3306/printway_account
     username: app
     password: app@0964603264

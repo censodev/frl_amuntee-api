@@ -9,7 +9,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "payment_transactions", schema = "amuntee_business", catalog = "")
+@Table(name = "payment_transactions")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

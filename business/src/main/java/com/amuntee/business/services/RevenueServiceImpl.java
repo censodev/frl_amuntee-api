@@ -1,8 +1,6 @@
 package com.amuntee.business.services;
 
-import com.amuntee.business.dto.OrderDTO;
-import com.amuntee.business.dto.ShopifyOrder;
-import com.amuntee.business.dto.ShopifyPaymentTransaction;
+import com.amuntee.business.dto.*;
 import com.amuntee.business.models.Order;
 import com.amuntee.business.models.OrderProduct;
 import com.amuntee.business.models.PaymentTransaction;
@@ -10,15 +8,19 @@ import com.amuntee.business.repositories.OrderProductRepository;
 import com.amuntee.business.repositories.OrderRepository;
 import com.amuntee.business.repositories.PaymentTransactionRepository;
 import com.amuntee.business.utils.SkuUtil;
+import com.amuntee.common.json.RestResponsePage;
+import com.amuntee.common.time.TimeParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @Slf4j
-public class OrderServiceImpl implements OrderService {
+public class RevenueServiceImpl implements RevenueService {
     @Autowired
     private OrderRepository orderRepository;
 
@@ -43,50 +45,60 @@ public class OrderServiceImpl implements OrderService {
     private ObjectMapper objectMapper;
 
     @Override
-    public boolean syncShopifyOrders(boolean testMode) {
+    public boolean syncShopifyOrders(int limit, boolean testMode) {
         try {
             var lastOrder = orderRepository.findTopByOrderByCodeDesc();
-            var lastPaymentTransaction = paymentTransactionRepository.findTopByOrderByCodeDesc();
-
             var sinceId = lastOrder != null ? lastOrder.getCode() : "";
-            var shopifyOrders = shopifyService.fetchListOrder(sinceId);
-
-            sinceId = lastPaymentTransaction != null ? lastPaymentTransaction.getCode() : "";
-            var shopifyPaymentTransactions = shopifyService.fetchListPaymentTransaction(sinceId);
-
+            var shopifyOrders = shopifyService.fetchListOrder(sinceId, limit);
             saveOrders(shopifyOrders, testMode);
             saveOrderProducts(shopifyOrders, testMode);
-            savePaymentTransactions(shopifyPaymentTransactions, testMode);
-
         } catch (Exception ex) {
-            log.error(ex.getMessage());
+            ex.printStackTrace();
             return false;
         }
         return true;
     }
 
     @Override
-    public List<OrderDTO> listOrders(int page, int limit, String order, String orderBy) {
+    public boolean syncShopifyPaymentTransactions(int limit, boolean testMode) {
+        try {
+            var lastPaymentTransaction = paymentTransactionRepository.findTopByOrderByCodeDesc();
+            var sinceId = lastPaymentTransaction != null ? lastPaymentTransaction.getCode() : "";
+            var shopifyPaymentTransactions = shopifyService
+                    .fetchListPaymentTransaction(sinceId, limit);
+            savePaymentTransactions(shopifyPaymentTransactions, testMode);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Page<OrderDTO> listOrders(int page, int limit, String order, String orderBy) {
         var sort = order.equals("asc")
                 ? Sort.by(orderBy).ascending()
                 : Sort.by(orderBy).descending();
-        var orders = orderRepository.findAll(PageRequest.of(page, limit, sort)).getContent();
-        var type = new TypeReference<List<OrderDTO>>() {};
-
-        return objectMapper.convertValue(orders, type).stream()
-                .peek(orderDTO -> {
-                    var products = orderProductRepository.findByOrderCode(orderDTO.getCode());
-                    var paymentTransactions = paymentTransactionRepository
-                            .findByOrderCode(orderDTO.getCode());
-                    orderDTO.setProducts(products);
-                    orderDTO.setPaymentTransactions(paymentTransactions);
-                })
-                .collect(Collectors.toList());
+        var orders = orderRepository.findAll(PageRequest.of(page, limit, sort));
+        var typeRef = new TypeReference<RestResponsePage<OrderDTO>>() {};
+        return objectMapper.convertValue(orders, typeRef);
     }
 
     @Override
     public OrderDTO getOrderDetails(String orderCode) {
-        return null;
+        var products = orderProductRepository.findByOrderCode(orderCode);
+        var paymentTransactions = paymentTransactionRepository
+                .findByOrderCode(orderCode);
+        var order = orderRepository.findByCode(orderCode);
+        var orderDto = objectMapper.convertValue(order, OrderDTO.class);
+        orderDto.setProducts(products);
+        orderDto.setPaymentTransactions(paymentTransactions);
+        return orderDto;
+    }
+
+    @Override
+    public List<OrderStat> statRevenue(LocalDateTime from, LocalDateTime to) {
+        return orderRepository.statOrders(from, to);
     }
 
     private void saveOrders(List<ShopifyOrder> shopifyOrders, boolean testMode) {
@@ -102,9 +114,9 @@ public class OrderServiceImpl implements OrderService {
                     order.setTotalPrice(shopifyOrder.getTotalPrice());
                     order.setFinancialStatus(shopifyOrder.getFinancialStatus());
                     order.setFulfillmentStatus(shopifyOrder.getFulfillmentStatus());
-                    order.setCreatedAt(shopifyOrder.getCreatedAt());
-                    order.setUpdatedAt(shopifyOrder.getUpdatedAt());
-                    order.setClosedAt(shopifyOrder.getClosedAt());
+                    order.setCreatedAt(TimeParser.parse(shopifyOrder.getCreatedAt()));
+                    order.setUpdatedAt(TimeParser.parse(shopifyOrder.getUpdatedAt()));
+                    order.setClosedAt(TimeParser.parse(shopifyOrder.getClosedAt()));
                     return order;
                 })
                 .collect(Collectors.toList());

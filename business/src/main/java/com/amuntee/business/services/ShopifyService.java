@@ -6,6 +6,6 @@ import com.amuntee.business.dto.ShopifyPaymentTransaction;
 import java.util.List;
 
 public interface ShopifyService {
-    List<ShopifyOrder> fetchListOrder(String sinceId);
-    List<ShopifyPaymentTransaction> fetchListPaymentTransaction(String sinceId);
+    List<ShopifyOrder> fetchListOrder(String sinceId, int limit);
+    List<ShopifyPaymentTransaction> fetchListPaymentTransaction(String sinceId, int limit);
 }

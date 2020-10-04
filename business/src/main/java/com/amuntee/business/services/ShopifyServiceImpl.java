@@ -37,10 +37,12 @@ public class ShopifyServiceImpl implements ShopifyService {
     }
 
     @Override
-    public List<ShopifyOrder> fetchListOrder(String sinceId) {
+    public List<ShopifyOrder> fetchListOrder(String sinceId, int limit) {
         var url = new StringBuilder(shopifyHost + "orders.json")
                 .append("?")
                 .append("status=any")
+                .append("&")
+                .append("limit=").append(limit)
                 .append("&")
                 .append("since_id=").append(sinceId);
         var orders = shopifyHttp.getForObject(url.toString(), ShopifyOrderList.class);
@@ -51,9 +53,11 @@ public class ShopifyServiceImpl implements ShopifyService {
     }
 
     @Override
-    public List<ShopifyPaymentTransaction> fetchListPaymentTransaction(String sinceId) {
+    public List<ShopifyPaymentTransaction> fetchListPaymentTransaction(String sinceId, int limit) {
         var url = new StringBuilder(shopifyHost + "shopify_payments/balance/transactions.json")
                 .append("?")
+                .append("limit=").append(limit)
+                .append("&")
                 .append("since_id=").append(sinceId);
         var paymentTransactions = shopifyHttp
                 .getForObject(url.toString(), ShopifyPaymentTransactionList.class);

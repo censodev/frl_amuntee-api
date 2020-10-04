@@ -29,7 +29,7 @@ public class UserController {
     public Page<User> listUsers(@RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "10") int limit,
                                 @RequestParam(defaultValue = "id") String orderBy,
-                                @RequestParam(defaultValue = "true") String order) {
+                                @RequestParam(defaultValue = "asc") String order) {
         var sort = order.equals("asc")
                 ? Sort.by(orderBy).ascending()
                 : Sort.by(orderBy).descending();

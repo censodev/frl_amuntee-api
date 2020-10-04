@@ -1,6 +1,7 @@
 package com.amuntee.business;
 
-import com.amuntee.business.services.OrderService;
+import com.amuntee.business.repositories.OrderRepository;
+import com.amuntee.business.services.RevenueService;
 import com.amuntee.business.services.ShopifyService;
 import com.amuntee.business.utils.SkuUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,10 @@ class BusinessApplicationTests {
 	ShopifyService shopifyService;
 
 	@Autowired
-	OrderService orderService;
+    RevenueService revenueService;
+
+	@Autowired
+	OrderRepository orderRepository;
 
 	@Test
 	void contextLoads() {
@@ -23,20 +27,27 @@ class BusinessApplicationTests {
 
 	@Test
 	void testFetchShopifyOrder() {
-		var res = shopifyService.fetchListOrder("");
+		var res = shopifyService.fetchListOrder("", 10);
 		log.info(res.toString());
 	}
 
 	@Test
 	void testFetchShopifyPaymentTransaction() {
-		var res = shopifyService.fetchListPaymentTransaction("");
+		var res = shopifyService.fetchListPaymentTransaction("", 10);
 		log.info(res.toString());
 	}
 
 	@Test
 	void testSyncShopifyOrders() {
-//		var rs = orderService.syncShopifyOrders(false);
-		var rs = orderService.syncShopifyOrders(true);
+//		var rs = revenueService.syncShopifyOrders(10, true);
+		var rs = revenueService.syncShopifyOrders(200, false);
+		log.info(String.valueOf(rs));
+	}
+
+	@Test
+	void testSyncShopifyPaymentTransactions() {
+//		var rs = revenueService.syncShopifyPaymentTransactions(10, true);
+		var rs = revenueService.syncShopifyPaymentTransactions(200, false);
 		log.info(String.valueOf(rs));
 	}
 
@@ -50,9 +61,17 @@ class BusinessApplicationTests {
 	}
 
 	@Test
-	void testOrdersStatistic() {
-		var rs = orderService.listOrders(0, 20, "asc", "code");
-		log.info(rs.toString());
+	void testOrders() {
+		var rs1 = revenueService.listOrders(0, 10, "asc", "code");
+		var rs2 = revenueService.getOrderDetails("2287528411197");
+		log.info(rs1.toString());
+		log.info(rs2.toString());
+	}
+
+	@Test
+	void testOrderStat() {
+		var stat = orderRepository.statOrders(null, null);
+		log.info(stat.toString());
 	}
 
 }

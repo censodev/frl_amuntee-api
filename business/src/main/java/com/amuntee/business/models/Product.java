@@ -6,9 +6,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "products", schema = "amuntee_business", catalog = "")
+@Table(name = "products")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,11 +48,11 @@ public class Product {
 
     @Basic
     @Column(name = "created_at", nullable = true)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Basic
     @Column(name = "updated_at", nullable = true)
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     @Basic
     @Column(name = "created_by", nullable = true)

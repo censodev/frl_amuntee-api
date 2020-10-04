@@ -9,6 +9,9 @@ zuul:
     user:
       url: http://localhost:8001/api/user
       path: /api/user/**
-    business:
-      url: http://localhost:8002/api/business
-      path: /api/business/**
+    revenue:
+      url: http://localhost:8002/api/revenue
+      path: /api/revenue/**
+    fee:
+      url: http://localhost:8002/api/fee
+      path: /api/fee/**

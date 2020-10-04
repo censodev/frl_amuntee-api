@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders", schema = "amuntee_business", catalog = "")
+@Table(name = "orders")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,13 +50,13 @@ public class Order {
 
     @Basic
     @Column(name = "created_at", nullable = true)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Basic
     @Column(name = "updated_at", nullable = true)
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 
     @Basic
-    @Column(name = "close_at", nullable = true)
-    private String closedAt;
+    @Column(name = "closed_at", nullable = true)
+    private LocalDateTime closedAt;
 }
