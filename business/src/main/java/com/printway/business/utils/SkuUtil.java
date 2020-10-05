@@ -10,7 +10,7 @@ public class SkuUtil {
     private final String designCode;
 
     public SkuUtil(String sku) {
-        String[] elements = sku.split("-");
+        var elements = sku.replace(" ", "").split("-");
         supplierCode = elements[0];
         productCode = elements[1];
         sellerCode = elements[2].substring(0, 2);

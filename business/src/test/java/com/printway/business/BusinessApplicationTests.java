@@ -53,7 +53,7 @@ class BusinessApplicationTests {
 
 	@Test
 	void testSku() {
-		var skuUtil = new SkuUtil("ab-bc-defghjk");
+		var skuUtil = new SkuUtil("ab - bc- defghjk");
 		log.info(skuUtil.getSupplierCode());
 		log.info(skuUtil.getProductCode());
 		log.info(skuUtil.getSellerCode());
