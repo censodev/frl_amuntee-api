@@ -1,6 +1,6 @@
 package com.printway.business.repositories;
 
-import com.printway.business.dto.OrderStat;
+import com.printway.business.dto.statistic.RevenueSummaryStatistic;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,16 +15,18 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
     EntityManager em;
 
     @Override
-    public List<OrderStat> statOrders(LocalDateTime from, LocalDateTime to) {
-//        select
-//        year(created_at) year,
-//                month(created_at) as month,
-//        count(*) as ordersCount,
-//        sum(sub_total_price) as subTotalPrice,
-//        sum(total_price) as totalPrice
-//        from orders
-//        group by year(created_at),  month(created_at)
-//        ;
+    public List<RevenueSummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to) {
+        /**
+         * select
+         * year(created_at) year,
+         *         month(created_at) as month,
+         * count(*) as ordersCount,
+         * sum(sub_total_price) as subTotalPrice,
+         * sum(total_price) as totalPrice
+         * from orders
+         * group by year(created_at),  month(created_at)
+         * ;
+         */
         String query = "select\n" +
                 "\tyear(created_at) as year,\n" +
                 "\tmonth(created_at) as month,\n" +
@@ -34,9 +36,9 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                 "from orders\n" +
                 "group by year(created_at),  month(created_at)";
         List<Object[]> rsList = em.createNativeQuery(query).getResultList();
-        var rs = new ArrayList<OrderStat>();
+        var rs = new ArrayList<RevenueSummaryStatistic>();
         for (Object[] obj : rsList) {
-            var stat = new OrderStat();
+            var stat = new RevenueSummaryStatistic();
             stat.setYear(obj[0] == null ? null : Integer.parseInt(String.valueOf(obj[0])));
             stat.setMonth(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
             stat.setOrdersCount(Integer.parseInt(String.valueOf(obj[2])));

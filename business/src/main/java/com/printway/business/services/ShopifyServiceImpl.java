@@ -1,9 +1,9 @@
 package com.printway.business.services;
 
-import com.printway.business.dto.ShopifyOrder;
-import com.printway.business.dto.ShopifyOrderList;
-import com.printway.business.dto.ShopifyPaymentTransaction;
-import com.printway.business.dto.ShopifyPaymentTransactionList;
+import com.printway.business.dto.shopify.ShopifyOrder;
+import com.printway.business.dto.shopify.ShopifyOrderList;
+import com.printway.business.dto.shopify.ShopifyPaymentTransaction;
+import com.printway.business.dto.shopify.ShopifyPaymentTransactionList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;

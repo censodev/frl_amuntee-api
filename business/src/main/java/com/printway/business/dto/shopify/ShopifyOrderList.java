@@ -1,4 +1,4 @@
-package com.printway.business.dto;
+package com.printway.business.dto.shopify;
 
 import lombok.Data;
 import lombok.ToString;

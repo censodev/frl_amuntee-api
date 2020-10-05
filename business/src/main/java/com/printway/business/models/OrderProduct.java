@@ -50,4 +50,8 @@ public class OrderProduct {
     @Basic
     @Column(name = "quantity", length = 50)
     private int quantity;
+
+    @Basic
+    @Column(name = "price")
+    private double price;
 }

@@ -1,7 +1,8 @@
 package com.printway.business.services;
 
 import com.printway.business.dto.OrderDTO;
-import com.printway.business.dto.OrderStat;
+import com.printway.business.dto.statistic.RevenueSummaryStatistic;
+import com.printway.business.dto.statistic.RevenueSpecificStatistic;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -12,5 +13,10 @@ public interface RevenueService {
     boolean syncShopifyPaymentTransactions(int limit, boolean testMode);
     Page<OrderDTO> listOrders(int page, int limit, String order, String orderBy);
     OrderDTO getOrderDetails(String orderCode);
-    List<OrderStat> statRevenue(LocalDateTime from, LocalDateTime to);
+    List<RevenueSummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to);
+    List<RevenueSpecificStatistic> statForProductSku(LocalDateTime from, LocalDateTime to);
+    List<RevenueSpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to);
+    List<RevenueSpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to);
+    List<RevenueSpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to);
+    List<RevenueSpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to);
 }

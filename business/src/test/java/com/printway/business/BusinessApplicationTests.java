@@ -1,6 +1,5 @@
 package com.printway.business;
 
-import com.printway.business.repositories.OrderRepository;
 import com.printway.business.services.RevenueService;
 import com.printway.business.services.ShopifyService;
 import com.printway.business.utils.SkuUtil;
@@ -18,8 +17,6 @@ class BusinessApplicationTests {
 	@Autowired
 	RevenueService revenueService;
 
-	@Autowired
-	OrderRepository orderRepository;
 
 	@Test
 	void contextLoads() {
@@ -40,7 +37,7 @@ class BusinessApplicationTests {
 	@Test
 	void testSyncShopifyOrders() {
 //		var rs = revenueService.syncShopifyOrders(10, true);
-		var rs = revenueService.syncShopifyOrders(200, false);
+		var rs = revenueService.syncShopifyOrders(100, false);
 		log.info(String.valueOf(rs));
 	}
 
@@ -69,9 +66,19 @@ class BusinessApplicationTests {
 	}
 
 	@Test
-	void testOrderStat() {
-		var stat = orderRepository.statOrders(null, null);
-		log.info(stat.toString());
+	void testStatistic() {
+		var stat = revenueService.statForSummary(null, null);
+		log.info("STAT ORDERS: " + stat.toString());
+		var stat2 = revenueService.statForProductSku(null, null);
+		log.info("STAT SKU: " + stat2.toString());
+		stat2 = revenueService.statForProductCode(null, null);
+		log.info("STAT PRD CODE: " + stat2.toString());
+		stat2 = revenueService.statForProductDesign(null, null);
+		log.info("STAT PRD DESIGN: " + stat2.toString());
+		stat2 = revenueService.statForSupplier(null, null);
+		log.info("STAT SUPPLIER: " + stat2.toString());
+		stat2 = revenueService.statForSeller(null, null);
+		log.info("STAT SELLER: " + stat2.toString());
 	}
 
 }

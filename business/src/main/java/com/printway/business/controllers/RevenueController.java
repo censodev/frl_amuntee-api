@@ -1,7 +1,8 @@
 package com.printway.business.controllers;
 
 import com.printway.business.dto.OrderDTO;
-import com.printway.business.dto.OrderStat;
+import com.printway.business.dto.statistic.RevenueSummaryStatistic;
+import com.printway.business.dto.statistic.RevenueSpecificStatistic;
 import com.printway.business.services.RevenueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,7 +30,32 @@ public class RevenueController {
     }
 
     @GetMapping("statistic")
-    public List<OrderStat> statistic() {
-        return revenueService.statRevenue(null, null);
+    public List<RevenueSummaryStatistic> statistic() {
+        return revenueService.statForSummary(null, null);
+    }
+
+    @GetMapping("statistic/product-sku")
+    public List<RevenueSpecificStatistic> statForProductSku() {
+        return revenueService.statForProductSku(null, null);
+    }
+
+    @GetMapping("statistic/product-code")
+    public List<RevenueSpecificStatistic> statForProductCode() {
+        return revenueService.statForProductCode(null, null);
+    }
+
+    @GetMapping("statistic/product-design")
+    public List<RevenueSpecificStatistic> statForProductDesign() {
+        return revenueService.statForProductDesign(null, null);
+    }
+
+    @GetMapping("statistic/seller")
+    public List<RevenueSpecificStatistic> statForSeller() {
+        return revenueService.statForSeller(null, null);
+    }
+
+    @GetMapping("statistic/supplier")
+    public List<RevenueSpecificStatistic> statForSupplier() {
+        return revenueService.statForSupplier(null, null);
     }
 }

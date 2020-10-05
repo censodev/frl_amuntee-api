@@ -1,10 +1,10 @@
 package com.printway.business.services;
 
-import com.amuntee.business.dto.*;
 import com.printway.business.dto.OrderDTO;
-import com.printway.business.dto.OrderStat;
-import com.printway.business.dto.ShopifyOrder;
-import com.printway.business.dto.ShopifyPaymentTransaction;
+import com.printway.business.dto.statistic.RevenueSummaryStatistic;
+import com.printway.business.dto.statistic.RevenueSpecificStatistic;
+import com.printway.business.dto.shopify.ShopifyOrder;
+import com.printway.business.dto.shopify.ShopifyPaymentTransaction;
 import com.printway.business.models.Order;
 import com.printway.business.models.OrderProduct;
 import com.printway.business.models.PaymentTransaction;
@@ -101,8 +101,33 @@ public class RevenueServiceImpl implements RevenueService {
     }
 
     @Override
-    public List<OrderStat> statRevenue(LocalDateTime from, LocalDateTime to) {
-        return orderRepository.statOrders(from, to);
+    public List<RevenueSummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to) {
+        return orderRepository.statForSummary(from, to);
+    }
+
+    @Override
+    public List<RevenueSpecificStatistic> statForProductSku(LocalDateTime from, LocalDateTime to) {
+        return orderProductRepository.statForSku(from, to);
+    }
+
+    @Override
+    public List<RevenueSpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
+        return orderProductRepository.statForProductCode(from, to);
+    }
+
+    @Override
+    public List<RevenueSpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to) {
+        return orderProductRepository.statForDesignCode(from, to);
+    }
+
+    @Override
+    public List<RevenueSpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
+        return orderProductRepository.statForSupplier(from, to);
+    }
+
+    @Override
+    public List<RevenueSpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
+        return orderProductRepository.statForSeller(from, to);
     }
 
     private void saveOrders(List<ShopifyOrder> shopifyOrders, boolean testMode) {
@@ -145,6 +170,7 @@ public class RevenueServiceImpl implements RevenueService {
                                 product.setQuantity(prd.getQuantity());
                                 product.setSku(prd.getSku());
                                 product.setTitle(prd.getTitle());
+                                product.setPrice(prd.getPriceSet().getPresentmentMoney().getAmount());
 
                                 try {
                                     var skuUtil = new SkuUtil(prd.getSku());

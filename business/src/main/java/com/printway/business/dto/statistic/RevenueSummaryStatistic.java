@@ -1,4 +1,4 @@
-package com.printway.business.dto;
+package com.printway.business.dto.statistic;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderStat {
+public class RevenueSummaryStatistic {
     private Integer year;
     private Integer month;
     private Integer ordersCount;

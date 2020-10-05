@@ -1,7 +1,7 @@
 package com.printway.business.services;
 
-import com.printway.business.dto.ShopifyOrder;
-import com.printway.business.dto.ShopifyPaymentTransaction;
+import com.printway.business.dto.shopify.ShopifyOrder;
+import com.printway.business.dto.shopify.ShopifyPaymentTransaction;
 
 import java.util.List;
 
