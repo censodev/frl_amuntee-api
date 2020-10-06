@@ -1,0 +1,1 @@
+docker run --name=printway-gateway -p 8000:8000 printway-gateway

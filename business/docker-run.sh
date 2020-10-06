@@ -1,0 +1,1 @@
+docker run --name=printway-business -p 8002:8002 printway-business

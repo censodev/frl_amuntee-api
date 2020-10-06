@@ -1,0 +1,1 @@
+docker run --name=printway-auth -p 8001:8001 printway-auth

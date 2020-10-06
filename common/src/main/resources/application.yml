@@ -1,7 +1,0 @@
-security:
-  jwt:
-    uri: /api/auth/**
-    header: Authorization
-    prefix: Bearer
-    expiration: 86400000
-    secret: e5daaa90c369adfd156862d6df632dede5daaa90c369adfd156862d6df632dede5daaa90c369adfd156862d6df632ded

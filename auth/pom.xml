@@ -8,11 +8,11 @@
 		<version>2.3.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.amuntee</groupId>
+	<groupId>com.printway</groupId>
 	<artifactId>auth</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>auth</name>
-	<description>Auth Service For Amuntee</description>
+	<description>Auth Service For Printway</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -64,7 +64,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.amuntee</groupId>
+			<groupId>com.printway</groupId>
 			<artifactId>common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>

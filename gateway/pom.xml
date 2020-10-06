@@ -8,11 +8,11 @@
 		<version>2.3.4.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.amuntee</groupId>
+	<groupId>com.printway</groupId>
 	<artifactId>gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>gateway</name>
-	<description>Gateway Module For Amuntee</description>
+	<description>Gateway Module For Printway</description>
 
 	<properties>
 		<java.version>11</java.version>
@@ -59,7 +59,7 @@
 			<artifactId>tomcat-embed-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.amuntee</groupId>
+			<groupId>com.printway</groupId>
 			<artifactId>common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>

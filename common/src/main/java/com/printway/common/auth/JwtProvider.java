@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jboss.logging.Logger;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 
@@ -14,20 +13,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JwtProvider {
-    @Value("${security.jwt.uri:/api/auth/**}")
-    private String Uri;
-
-    @Value("${security.jwt.header:Authorization}")
-    private String header;
-
-    @Value("${security.jwt.prefix:Bearer }")
-    private String prefix;
-
-    @Value("${security.jwt.expiration:#{24*60*60*1000}}")
-    private int expiration;
-
-    @Value("${security.jwt.secret:JwtSecretKey}")
-    private String secret;
+    private final String Uri = "/api/auth/**";
+    private final String header = "Authorization";
+    private final String prefix = "Bearer ";
+    private final int expiration = 24*60*60*1000;
+    private final String secret = "jalskdjlakjdlkajsdlkjsalkdjsalkdjlksajdlksajdlksajdlkjsalkdjaslkdjlksajdlksajdl";
 
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
@@ -65,6 +55,8 @@ public class JwtProvider {
             logger.error("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
             logger.error("JWT claims string is empty.");
+        } catch (Exception ex) {
+            logger.error(ex.getMessage());
         }
         return false;
     }

@@ -15,7 +15,7 @@ class BusinessApplicationTests {
 	ShopifyService shopifyService;
 
 	@Autowired
-	RevenueService revenueService;
+    RevenueService revenueService;
 
 
 	@Test
@@ -60,9 +60,9 @@ class BusinessApplicationTests {
 	@Test
 	void testOrders() {
 		var rs1 = revenueService.listOrders(0, 10, "asc", "code");
-		var rs2 = revenueService.getOrderDetails("2287528411197");
+//		var rs2 = revenueService.getOrderDetails("2287528411197");
 		log.info(rs1.toString());
-		log.info(rs2.toString());
+//		log.info(rs2.toString());
 	}
 
 	@Test
