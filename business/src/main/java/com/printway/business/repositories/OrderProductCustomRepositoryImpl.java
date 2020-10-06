@@ -18,24 +18,26 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     public List<RevenueSpecificStatistic> statForSku(LocalDateTime from, LocalDateTime to) {
         /**
          * select
-         * 	year(ord.created_at),
-         *     month(ord.created_at),
-         *     ordprd.sku,
-         *     sum(ordprd.quantity),
-         *     sum(ordprd.price * ordprd.quantity)
+         * 	year(ord.created_at) year,
+         * 	month(ord.created_at) month,
+         * 	ordprd.sku,
+         * 	sum(ordprd.quantity) quantity,
+         * 	sum(ordprd.price * ordprd.quantity) revenue
          * from orders_products ordprd
          * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.sku, year(ord.created_at), month(ord.created_at);
+         * group by ordprd.sku, year, month
+         * order by year desc, month desc, revenue desc;
          */
-        String query = "select \n" +
-                "\tyear(ord.created_at),\n" +
-                "    month(ord.created_at),\n" +
-                "    ordprd.sku,\n" +
-                "    sum(ordprd.quantity),\n" +
-                "    sum(ordprd.price * ordprd.quantity)\n" +
+        String query = "select\n" +
+                "\tyear(ord.created_at) year,\n" +
+                "\tmonth(ord.created_at) month,\n" +
+                "\tordprd.sku,\n" +
+                "\tsum(ordprd.quantity) quantity,\n" +
+                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
                 "from orders_products ordprd\n" +
                 "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.sku, year(ord.created_at), month(ord.created_at);";
+                "group by ordprd.sku, year, month\n" +
+                "order by year desc, month desc, revenue desc;";
         return getStatistic(query);
     }
 
@@ -43,24 +45,26 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     public List<RevenueSpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
         /**
          * select
-         * 	year(ord.created_at),
-         *     month(ord.created_at),
-         *     ordprd.product_code,
-         *     sum(ordprd.quantity),
-         *     sum(ordprd.price * ordprd.quantity)
+         * 	year(ord.created_at) year,
+         * 	month(ord.created_at) month,
+         * 	ordprd.product_code,
+         * 	sum(ordprd.quantity) quantity,
+         * 	sum(ordprd.price * ordprd.quantity) revenue
          * from orders_products ordprd
          * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.product_code, year(ord.created_at), month(ord.created_at);
+         * group by ordprd.product_code, year, month
+         * order by year desc, month desc, revenue desc;
          */
-        String query = "select \n" +
-                "\tyear(ord.created_at),\n" +
-                "    month(ord.created_at),\n" +
-                "    ordprd.product_code,\n" +
-                "    sum(ordprd.quantity),\n" +
-                "    sum(ordprd.price * ordprd.quantity)\n" +
+        String query = "select\n" +
+                "\tyear(ord.created_at) year,\n" +
+                "\tmonth(ord.created_at) month,\n" +
+                "\tordprd.product_code,\n" +
+                "\tsum(ordprd.quantity) quantity,\n" +
+                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
                 "from orders_products ordprd\n" +
                 "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.product_code, year(ord.created_at), month(ord.created_at);";
+                "group by ordprd.product_code, year, month\n" +
+                "order by year desc, month desc, revenue desc;";
         return getStatistic(query);
     }
 
@@ -68,24 +72,26 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     public List<RevenueSpecificStatistic> statForDesignCode(LocalDateTime from, LocalDateTime to) {
         /**
          * select
-         * 	year(ord.created_at),
-         *     month(ord.created_at),
-         *     ordprd.design_code,
-         *     sum(ordprd.quantity),
-         *     sum(ordprd.price * ordprd.quantity)
+         * 	year(ord.created_at) year,
+         * 	month(ord.created_at) month,
+         * 	ordprd.design_code,
+         * 	sum(ordprd.quantity) quantity,
+         * 	sum(ordprd.price * ordprd.quantity) revenue
          * from orders_products ordprd
          * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.design_code, year(ord.created_at), month(ord.created_at);
+         * group by ordprd.design_code, year, month
+         * order by year desc, month desc, revenue desc;
          */
-        String query = "select \n" +
-                "\tyear(ord.created_at),\n" +
-                "    month(ord.created_at),\n" +
-                "    ordprd.design_code,\n" +
-                "    sum(ordprd.quantity),\n" +
-                "    sum(ordprd.price * ordprd.quantity)\n" +
+        String query = "select\n" +
+                "\tyear(ord.created_at) year,\n" +
+                "\tmonth(ord.created_at) month,\n" +
+                "\tordprd.design_code,\n" +
+                "\tsum(ordprd.quantity) quantity,\n" +
+                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
                 "from orders_products ordprd\n" +
                 "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.design_code, year(ord.created_at), month(ord.created_at);";
+                "group by ordprd.design_code, year, month\n" +
+                "order by year desc, month desc, revenue desc;";
         return getStatistic(query);
     }
 
@@ -93,24 +99,26 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     public List<RevenueSpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
         /**
          * select
-         * 	year(ord.created_at),
-         *     month(ord.created_at),
-         *     ordprd.seller_code,
-         *     sum(ordprd.quantity),
-         *     sum(ordprd.price * ordprd.quantity)
+         * 	year(ord.created_at) year,
+         * 	month(ord.created_at) month,
+         * 	ordprd.seller_code,
+         * 	sum(ordprd.quantity) quantity,
+         * 	sum(ordprd.price * ordprd.quantity) revenue
          * from orders_products ordprd
          * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.seller_code, year(ord.created_at), month(ord.created_at);
+         * group by ordprd.seller_code, year, month
+         * order by year desc, month desc, revenue desc;
          */
-        String query = "select \n" +
-                "\tyear(ord.created_at),\n" +
-                "    month(ord.created_at),\n" +
-                "    ordprd.seller_code,\n" +
-                "    sum(ordprd.quantity),\n" +
-                "    sum(ordprd.price * ordprd.quantity)\n" +
+        String query = "select\n" +
+                "\tyear(ord.created_at) year,\n" +
+                "\tmonth(ord.created_at) month,\n" +
+                "\tordprd.seller_code,\n" +
+                "\tsum(ordprd.quantity) quantity,\n" +
+                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
                 "from orders_products ordprd\n" +
                 "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.seller_code, year(ord.created_at), month(ord.created_at);";
+                "group by ordprd.seller_code, year, month\n" +
+                "order by year desc, month desc, revenue desc;";
         return getStatistic(query);
     }
 
@@ -118,24 +126,26 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     public List<RevenueSpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
         /**
          * select
-         * 	year(ord.created_at),
-         *     month(ord.created_at),
-         *     ordprd.supplier_code,
-         *     sum(ordprd.quantity),
-         *     sum(ordprd.price * ordprd.quantity)
+         * 	year(ord.created_at) year,
+         * 	month(ord.created_at) month,
+         * 	ordprd.supplier_code,
+         * 	sum(ordprd.quantity) quantity,
+         * 	sum(ordprd.price * ordprd.quantity) revenue
          * from orders_products ordprd
          * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.supplier_code, year(ord.created_at), month(ord.created_at);
+         * group by ordprd.supplier_code, year, month
+         * order by year desc, month desc, revenue desc;
          */
-        String query = "select \n" +
-                "\tyear(ord.created_at),\n" +
-                "    month(ord.created_at),\n" +
-                "    ordprd.supplier_code,\n" +
-                "    sum(ordprd.quantity),\n" +
-                "    sum(ordprd.price * ordprd.quantity)\n" +
+        String query = "select\n" +
+                "\tyear(ord.created_at) year,\n" +
+                "\tmonth(ord.created_at) month,\n" +
+                "\tordprd.supplier_code,\n" +
+                "\tsum(ordprd.quantity) quantity,\n" +
+                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
                 "from orders_products ordprd\n" +
                 "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.supplier_code, year(ord.created_at), month(ord.created_at);";
+                "group by ordprd.supplier_code, year, month\n" +
+                "order by year desc, month desc, revenue desc;";
         return getStatistic(query);
     }
 
