@@ -1,1 +1,1 @@
-docker run --name=printway-auth -p 8001:8001 printway-auth
+docker run --name printway-auth --network bridge -p 8001:8001 printway-auth

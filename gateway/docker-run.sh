@@ -1,1 +1,1 @@
-docker run --name=printway-gateway -p 8000:8000 printway-gateway
+docker run --name printway-gateway --network bridge -p 8000:8000 printway-gateway
