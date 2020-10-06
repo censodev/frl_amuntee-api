@@ -1,6 +1,7 @@
 package com.printway.business.repositories;
 
 import com.printway.business.dto.statistic.RevenueSpecificStatistic;
+import com.printway.business.utils.BusinessUtil;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -159,6 +160,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
             stat.setTitle(obj[2] == null ? null : String.valueOf(obj[2]));
             stat.setQuantity(Integer.parseInt(String.valueOf(obj[3])));
             stat.setRevenue((double) obj[4]);
+            stat.setStoreFee(BusinessUtil.calcStoreFee((double) obj[4]));
             rs.add(stat);
         }
         return rs;

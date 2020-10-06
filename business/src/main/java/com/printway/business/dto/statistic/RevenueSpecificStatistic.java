@@ -11,4 +11,5 @@ public class RevenueSpecificStatistic {
     private String title;
     private Integer quantity;
     private Double revenue;
+    private Double storeFee;
 }
