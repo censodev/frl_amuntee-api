@@ -9,10 +9,12 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class RevenueSummaryStatistic {
+public class SummaryStatistic {
     private Integer year;
     private Integer month;
-    private Integer ordersCount;
-    private Double subTotalPrice;
-    private Double totalPrice;
+    private Double revenue;
+    private Double profit;
+    private Double marketingFee;
+    private Double storeFee;
+    private Double baseCostFee;
 }

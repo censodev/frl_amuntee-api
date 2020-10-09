@@ -159,7 +159,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
             stat.setMonth(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
             stat.setTitle(obj[2] == null ? null : String.valueOf(obj[2]));
             stat.setQuantity(Integer.parseInt(String.valueOf(obj[3])));
-            stat.setRevenue((double) obj[4]);
+            stat.setRevenue(Math.round((double) obj[4] * 100) / 100.00);
             stat.setStoreFee(BusinessUtil.calcStoreFee((double) obj[4]));
             rs.add(stat);
         }

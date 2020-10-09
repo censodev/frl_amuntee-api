@@ -1,12 +1,16 @@
 package com.printway.business;
 
-import com.printway.business.services.RevenueService;
+import com.printway.business.services.StatisticService;
 import com.printway.business.services.ShopifyService;
+import com.printway.business.services.SyncService;
 import com.printway.business.utils.SkuUtil;
+import com.printway.common.time.TimeParser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDateTime;
 
 @SpringBootTest
 @Slf4j
@@ -15,8 +19,10 @@ class BusinessApplicationTests {
 	ShopifyService shopifyService;
 
 	@Autowired
-    RevenueService revenueService;
+	StatisticService statisticService;
 
+	@Autowired
+	SyncService syncService;
 
 	@Test
 	void contextLoads() {
@@ -36,15 +42,15 @@ class BusinessApplicationTests {
 
 	@Test
 	void testSyncShopifyOrders() {
-//		var rs = revenueService.syncShopifyOrders(10, true);
-		var rs = revenueService.syncShopifyOrders(100, false);
+//		var rs = syncService.syncShopifyOrders(10, true);
+		var rs = syncService.syncShopifyOrders(100, false);
 		log.info(String.valueOf(rs));
 	}
 
 	@Test
 	void testSyncShopifyPaymentTransactions() {
-//		var rs = revenueService.syncShopifyPaymentTransactions(10, true);
-		var rs = revenueService.syncShopifyPaymentTransactions(200, false);
+//		var rs = syncService.syncShopifyPaymentTransactions(10, true);
+		var rs = syncService.syncShopifyPaymentTransactions(200, false);
 		log.info(String.valueOf(rs));
 	}
 
@@ -59,7 +65,7 @@ class BusinessApplicationTests {
 
 	@Test
 	void testOrders() {
-		var rs1 = revenueService.listOrders(0, 10, "asc", "code");
+		var rs1 = statisticService.listOrders(0, 10, "asc", "code");
 //		var rs2 = revenueService.getOrderDetails("2287528411197");
 		log.info(rs1.toString());
 //		log.info(rs2.toString());
@@ -67,17 +73,21 @@ class BusinessApplicationTests {
 
 	@Test
 	void testStatistic() {
-		var stat = revenueService.statForSummary(null, null);
-		log.info("STAT ORDERS: " + stat.toString());
-		var stat2 = revenueService.statForProductSku(null, null);
+		var from = TimeParser.parseEpochMillisToLocalDateTime(1600032915000L);
+		var to = TimeParser.parseEpochMillisToLocalDateTime(1601920864000L);
+		log.info("FROM: " + from.toString());
+		log.info("TO: " + to.toString());
+		var stat = statisticService.statForSummary(from, to);
+		log.info("STAT SUMMARY: " + stat.toString());
+		var stat2 = statisticService.statForProductSku(null, null);
 		log.info("STAT SKU: " + stat2.toString());
-		stat2 = revenueService.statForProductCode(null, null);
+		stat2 = statisticService.statForProductCode(null, null);
 		log.info("STAT PRD CODE: " + stat2.toString());
-		stat2 = revenueService.statForProductDesign(null, null);
+		stat2 = statisticService.statForProductDesign(null, null);
 		log.info("STAT PRD DESIGN: " + stat2.toString());
-		stat2 = revenueService.statForSupplier(null, null);
+		stat2 = statisticService.statForSupplier(null, null);
 		log.info("STAT SUPPLIER: " + stat2.toString());
-		stat2 = revenueService.statForSeller(null, null);
+		stat2 = statisticService.statForSeller(null, null);
 		log.info("STAT SELLER: " + stat2.toString());
 	}
 

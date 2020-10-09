@@ -1,8 +1,5 @@
 package com.printway.business.services;
 
-import com.printway.business.dto.OrderDTO;
-import com.printway.business.dto.statistic.RevenueSummaryStatistic;
-import com.printway.business.dto.statistic.RevenueSpecificStatistic;
 import com.printway.business.dto.shopify.ShopifyOrder;
 import com.printway.business.dto.shopify.ShopifyPaymentTransaction;
 import com.printway.business.models.Order;
@@ -12,27 +9,18 @@ import com.printway.business.repositories.OrderProductRepository;
 import com.printway.business.repositories.OrderRepository;
 import com.printway.business.repositories.PaymentTransactionRepository;
 import com.printway.business.utils.SkuUtil;
-import com.printway.common.json.RestResponsePage;
 import com.printway.common.time.TimeParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 @Slf4j
-public class RevenueServiceImpl implements RevenueService {
+public class SyncServiceImpl implements SyncService {
     @Autowired
     private OrderRepository orderRepository;
 
@@ -40,13 +28,10 @@ public class RevenueServiceImpl implements RevenueService {
     private ShopifyService shopifyService;
 
     @Autowired
-    private OrderProductRepository orderProductRepository;
-
-    @Autowired
     private PaymentTransactionRepository paymentTransactionRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private OrderProductRepository orderProductRepository;
 
     @Override
     public boolean syncShopifyOrders(int limit, boolean testMode) {
@@ -78,58 +63,6 @@ public class RevenueServiceImpl implements RevenueService {
         return true;
     }
 
-    @Override
-    public Page<OrderDTO> listOrders(int page, int limit, String order, String orderBy) {
-        var sort = order.equals("asc")
-                ? Sort.by(orderBy).ascending()
-                : Sort.by(orderBy).descending();
-        var orders = orderRepository.findAll(PageRequest.of(page, limit, sort));
-        var typeRef = new TypeReference<RestResponsePage<OrderDTO>>() {};
-        return objectMapper.convertValue(orders, typeRef);
-    }
-
-    @Override
-    public OrderDTO getOrderDetails(String orderCode) {
-        var products = orderProductRepository.findByOrderCode(orderCode);
-        var paymentTransactions = paymentTransactionRepository
-                .findByOrderCode(orderCode);
-        var order = orderRepository.findByCode(orderCode);
-        var orderDto = objectMapper.convertValue(order, OrderDTO.class);
-        orderDto.setProducts(products);
-        orderDto.setPaymentTransactions(paymentTransactions);
-        return orderDto;
-    }
-
-    @Override
-    public List<RevenueSummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to) {
-        return orderRepository.statForSummary(from, to);
-    }
-
-    @Override
-    public List<RevenueSpecificStatistic> statForProductSku(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForSku(from, to);
-    }
-
-    @Override
-    public List<RevenueSpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForProductCode(from, to);
-    }
-
-    @Override
-    public List<RevenueSpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForDesignCode(from, to);
-    }
-
-    @Override
-    public List<RevenueSpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForSupplier(from, to);
-    }
-
-    @Override
-    public List<RevenueSpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForSeller(from, to);
-    }
-
     private void saveOrders(List<ShopifyOrder> shopifyOrders, boolean testMode) {
         if (shopifyOrders.isEmpty())
             return;
@@ -143,9 +76,9 @@ public class RevenueServiceImpl implements RevenueService {
                     order.setTotalPrice(shopifyOrder.getTotalPrice());
                     order.setFinancialStatus(shopifyOrder.getFinancialStatus());
                     order.setFulfillmentStatus(shopifyOrder.getFulfillmentStatus());
-                    order.setCreatedAt(TimeParser.parse(shopifyOrder.getCreatedAt()));
-                    order.setUpdatedAt(TimeParser.parse(shopifyOrder.getUpdatedAt()));
-                    order.setClosedAt(TimeParser.parse(shopifyOrder.getClosedAt()));
+                    order.setCreatedAt(TimeParser.parseZonedDateTimeToLocalDateTime(shopifyOrder.getCreatedAt()));
+                    order.setUpdatedAt(TimeParser.parseZonedDateTimeToLocalDateTime(shopifyOrder.getUpdatedAt()));
+                    order.setClosedAt(TimeParser.parseZonedDateTimeToLocalDateTime(shopifyOrder.getClosedAt()));
                     return order;
                 })
                 .collect(Collectors.toList());

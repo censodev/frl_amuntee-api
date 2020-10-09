@@ -1,6 +1,8 @@
 package com.printway.business.repositories;
 
-import com.printway.business.dto.statistic.RevenueSummaryStatistic;
+import com.printway.business.dto.statistic.SummaryStatistic;
+import com.printway.business.utils.BusinessUtil;
+import com.printway.common.time.TimeParser;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -15,35 +17,34 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
     EntityManager em;
 
     @Override
-    public List<RevenueSummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to) {
-        /**
-         * select
-         * year(created_at) year,
-         *         month(created_at) as month,
-         * count(*) as ordersCount,
-         * sum(sub_total_price) as subTotalPrice,
-         * sum(total_price) as totalPrice
-         * from orders
-         * group by year(created_at),  month(created_at)
-         * ;
-         */
-        String query = "select\n" +
-                "\tyear(created_at) as year,\n" +
+    public List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to) {
+//        select
+//        year(created_at) year,
+//                month(created_at) as month,
+//        sum(sub_total_price) as subTotalPrice
+//        from orders
+//        where created_at between date(:from) and date(:to)
+//        group by year(created_at),  month(created_at)
+//        ;
+        String sql = "select\n" +
+                "\tyear(created_at) year,\n" +
                 "\tmonth(created_at) as month,\n" +
-                "\tcount(*) as ordersCount,\n" +
-                "\tsum(sub_total_price) as subTotalPrice,\n" +
-                "\tsum(total_price) as totalPrice\n" +
+                "\tsum(sub_total_price) as subTotalPrice\n" +
                 "from orders\n" +
-                "group by year(created_at),  month(created_at)";
-        List<Object[]> rsList = em.createNativeQuery(query).getResultList();
-        var rs = new ArrayList<RevenueSummaryStatistic>();
+                "where created_at between date(:from) and date(:to)\n" +
+                "group by year(created_at),  month(created_at)\n" +
+                ";";
+        var query = em.createNativeQuery(sql);
+        query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(from));
+        query.setParameter("to", TimeParser.parseLocalDateTimeToISOString(to));
+        List<Object[]> rsList = query.getResultList();
+        var rs = new ArrayList<SummaryStatistic>();
         for (Object[] obj : rsList) {
-            var stat = new RevenueSummaryStatistic();
+            var stat = new SummaryStatistic();
             stat.setYear(obj[0] == null ? null : Integer.parseInt(String.valueOf(obj[0])));
             stat.setMonth(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
-            stat.setOrdersCount(Integer.parseInt(String.valueOf(obj[2])));
-            stat.setSubTotalPrice((double) obj[3]);
-            stat.setTotalPrice((double) obj[4]);
+            stat.setRevenue(Math.round((double) obj[2] * 100) / 100.00);
+            stat.setStoreFee(BusinessUtil.calcStoreFee((double) obj[2]));
             rs.add(stat);
         }
         return rs;

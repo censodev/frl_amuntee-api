@@ -11,5 +11,4 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Integer>, OrderCustomRepository {
     Order findTopByOrderByCodeDesc();
     Order findByCode(String code);
-    List<Order> findByClosedAtBetween(LocalDateTime from, LocalDateTime to);
 }
