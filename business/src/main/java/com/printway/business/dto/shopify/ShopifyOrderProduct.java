@@ -14,6 +14,6 @@ public class ShopifyOrderProduct {
     @JsonProperty("quantity")
     private int quantity;
 
-    @JsonProperty("price_set")
-    private ShopifyProductPriceSet priceSet;
+    @JsonProperty("price")
+    private Double price;
 }

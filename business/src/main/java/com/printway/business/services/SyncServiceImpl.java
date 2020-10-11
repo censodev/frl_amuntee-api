@@ -99,7 +99,7 @@ public class SyncServiceImpl implements SyncService {
                                         : prd.getSku().replace(" ", "");
                                 product.setSku(sku);
                                 product.setTitle(prd.getTitle());
-                                product.setPrice(prd.getPriceSet().getPresentmentMoney().getAmount());
+                                product.setPrice(prd.getPrice());
 
                                 try {
                                     var skuUtil = new SkuUtil(prd.getSku());

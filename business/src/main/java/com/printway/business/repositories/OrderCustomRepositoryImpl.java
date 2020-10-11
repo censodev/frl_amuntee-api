@@ -19,21 +19,46 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
     @Override
     public List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to) {
 //        select
-//        year(created_at) year,
-//                month(created_at) as month,
-//        sum(sub_total_price) as subTotalPrice
-//        from orders
+//            year(ord.created_at) year,
+//            month(ord.created_at) month,
+//            sum(ord.revenue) revenue,
+//            sum(bcf.base_cost_fee) base_cost_fee
+//        from orders ord
+//        join (select
+//                ord.code,
+//                sum(prd.base_cost * oprd.quantity) base_cost_fee
+//            from orders ord
+//            join orders_products oprd
+//                on ord.code = oprd.order_code
+//            left join products prd
+//                on oprd.product_code = prd.code
+//            where ord.revenue > 0
+//            group by ord.code) bcf
+//            on bcf.code = ord.code
 //        where created_at between date(:from) and date(:to)
-//        group by year(created_at),  month(created_at)
+//        group by year, month
 //        ;
-        String sql = "select\n" +
-                "\tyear(created_at) year,\n" +
-                "\tmonth(created_at) as month,\n" +
-                "\tsum(sub_total_price) as subTotalPrice\n" +
-                "from orders\n" +
-                "where created_at between date(:from) and date(:to)\n" +
-                "group by year(created_at),  month(created_at)\n" +
-                ";";
+        String sql =
+                "        select\n" +
+                "            year(ord.created_at) year,\n" +
+                "            month(ord.created_at) month,\n" +
+                "            sum(ord.revenue) revenue,\n" +
+                "            sum(bcf.base_cost_fee) base_cost_fee\n" +
+                "        from orders ord\n" +
+                "        join (select\n" +
+                "                ord.code,\n" +
+                "                sum(prd.base_cost * oprd.quantity) base_cost_fee\n" +
+                "            from orders ord\n" +
+                "            join orders_products oprd\n" +
+                "                on ord.code = oprd.order_code\n" +
+                "            left join products prd\n" +
+                "                on oprd.product_code = prd.code\n" +
+                "            where ord.revenue > 0\n" +
+                "            group by ord.code) bcf\n" +
+                "            on bcf.code = ord.code\n" +
+                "        where created_at between date(:from) and date(:to)\n" +
+                "        group by year, month\n" +
+                "        ;";
         var query = em.createNativeQuery(sql);
         query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(from));
         query.setParameter("to", TimeParser.parseLocalDateTimeToISOString(to));
@@ -45,6 +70,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
             stat.setMonth(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
             stat.setRevenue(Math.round((double) obj[2] * 100) / 100.00);
             stat.setStoreFee(BusinessUtil.calcStoreFee((double) obj[2]));
+            stat.setBaseCostFee(obj[3] == null ? null : Math.round((double) obj[3] * 100) / 100.00);
             rs.add(stat);
         }
         return rs;

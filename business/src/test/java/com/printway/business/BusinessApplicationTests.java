@@ -53,14 +53,6 @@ class BusinessApplicationTests {
 	}
 
 	@Test
-	void testOrders() {
-		var rs1 = statisticService.listOrders(0, 10, "asc", "code");
-//		var rs2 = revenueService.getOrderDetails("2287528411197");
-		log.info(rs1.toString());
-//		log.info(rs2.toString());
-	}
-
-	@Test
 	void testStatistic() {
 		var from = TimeParser.parseEpochMillisToLocalDateTime(1600032915000L);
 		var to = TimeParser.parseEpochMillisToLocalDateTime(1601920864000L);
