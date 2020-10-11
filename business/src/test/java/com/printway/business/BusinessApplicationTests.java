@@ -58,7 +58,7 @@ class BusinessApplicationTests {
 		var to = TimeParser.parseEpochMillisToLocalDateTime(1601920864000L);
 		log.info("FROM: " + from.toString());
 		log.info("TO: " + to.toString());
-		var stat = statisticService.statForSummary(from, to);
+		var stat = statisticService.statForSummary(from, to, null);
 		log.info("STAT SUMMARY: " + stat.toString());
 		var stat2 = statisticService.statForProductSku(null, null);
 		log.info("STAT SKU: " + stat2.toString());

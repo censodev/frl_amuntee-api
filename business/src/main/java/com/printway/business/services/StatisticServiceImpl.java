@@ -23,8 +23,8 @@ public class StatisticServiceImpl implements StatisticService {
     private OrderProductRepository orderProductRepository;
 
     @Override
-    public List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to) {
-        return orderRepository.statForSummary(from, to);
+    public List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return orderRepository.statForSummary(from, to, storeId);
     }
 
     @Override

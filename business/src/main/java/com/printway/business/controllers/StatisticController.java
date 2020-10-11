@@ -17,10 +17,11 @@ public class StatisticController {
 
     @GetMapping("")
     public List<SummaryStatistic> statistic(@RequestParam long from,
-                                            @RequestParam long to) {
+                                            @RequestParam long to,
+                                            @RequestParam(defaultValue = "") Integer storeId) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
-        return statisticService.statForSummary(fromTime, toTime);
+        return statisticService.statForSummary(fromTime, toTime, storeId);
     }
 
     @GetMapping("product-sku")

@@ -6,5 +6,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderCustomRepository {
-    List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to);
+    List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to, Integer storeId);
 }
