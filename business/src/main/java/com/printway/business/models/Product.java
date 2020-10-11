@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Product {
     @Id
+    @GeneratedValue
     @Column(name = "id", nullable = false)
     private int id;
 
@@ -35,8 +36,8 @@ public class Product {
     private Double baseCost;
 
     @Basic
-    @Column(name = "supplier_id", nullable = true)
-    private Integer supplierId;
+    @Column(name = "supplier_code", nullable = true)
+    private String supplierCode;
 
     @Basic
     @Column(name = "shipping_time", length = 150)
@@ -61,5 +62,9 @@ public class Product {
     @Basic
     @Column(name = "updated_by", nullable = true)
     private Integer updatedBy;
+
+    @Basic
+    @Column(name = "status", columnDefinition = "integer default 1")
+    private Integer status;
 
 }

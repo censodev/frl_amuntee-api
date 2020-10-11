@@ -12,6 +12,9 @@ zuul:
     revenue:
       url: http://localhost:8002/api/revenue
       path: /api/revenue/**
-    fee:
-      url: http://localhost:8002/api/fee
-      path: /api/fee/**
+    store:
+      url: http://localhost:8002/api/store
+      path: /api/store/**
+    product:
+      url: http://localhost:8002/api/product
+      path: /api/product/**

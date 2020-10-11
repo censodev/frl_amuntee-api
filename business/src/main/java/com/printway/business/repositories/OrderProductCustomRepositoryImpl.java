@@ -1,6 +1,6 @@
 package com.printway.business.repositories;
 
-import com.printway.business.dto.statistic.RevenueSpecificStatistic;
+import com.printway.business.dto.statistic.SpecificStatistic;
 import com.printway.business.utils.BusinessUtil;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +16,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     private EntityManager em;
 
     @Override
-    public List<RevenueSpecificStatistic> statForSku(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForSku(LocalDateTime from, LocalDateTime to) {
         /**
          * select
          * 	year(ord.created_at) year,
@@ -43,7 +43,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
         /**
          * select
          * 	year(ord.created_at) year,
@@ -70,7 +70,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForDesignCode(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForDesignCode(LocalDateTime from, LocalDateTime to) {
         /**
          * select
          * 	year(ord.created_at) year,
@@ -97,7 +97,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
         /**
          * select
          * 	year(ord.created_at) year,
@@ -124,7 +124,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
         /**
          * select
          * 	year(ord.created_at) year,
@@ -150,11 +150,11 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
         return getStatistic(query);
     }
 
-    private List<RevenueSpecificStatistic> getStatistic(String query) {
+    private List<SpecificStatistic> getStatistic(String query) {
         List<Object[]> rsList = em.createNativeQuery(query).getResultList();
-        var rs = new ArrayList<RevenueSpecificStatistic>();
+        var rs = new ArrayList<SpecificStatistic>();
         for (Object[] obj : rsList) {
-            var stat = new RevenueSpecificStatistic();
+            var stat = new SpecificStatistic();
             stat.setYear(obj[0] == null ? null : Integer.parseInt(String.valueOf(obj[0])));
             stat.setMonth(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
             stat.setTitle(obj[2] == null ? null : String.valueOf(obj[2]));

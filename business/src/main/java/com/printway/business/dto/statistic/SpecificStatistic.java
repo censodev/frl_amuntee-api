@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class RevenueSpecificStatistic {
+public class SpecificStatistic {
     private Integer year;
     private Integer month;
     private String title;

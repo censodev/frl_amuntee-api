@@ -2,10 +2,9 @@ package com.printway.business.services;
 
 import com.printway.business.dto.OrderDTO;
 import com.printway.business.dto.statistic.SummaryStatistic;
-import com.printway.business.dto.statistic.RevenueSpecificStatistic;
+import com.printway.business.dto.statistic.SpecificStatistic;
 import com.printway.business.repositories.OrderProductRepository;
 import com.printway.business.repositories.OrderRepository;
-import com.printway.business.repositories.PaymentTransactionRepository;
 import com.printway.common.json.RestResponsePage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,9 +30,6 @@ public class StatisticServiceImpl implements StatisticService {
     private OrderProductRepository orderProductRepository;
 
     @Autowired
-    private PaymentTransactionRepository paymentTransactionRepository;
-
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Override
@@ -49,12 +45,9 @@ public class StatisticServiceImpl implements StatisticService {
     @Override
     public OrderDTO getOrderDetails(String orderCode) {
         var products = orderProductRepository.findByOrderCode(orderCode);
-        var paymentTransactions = paymentTransactionRepository
-                .findByOrderCode(orderCode);
         var order = orderRepository.findByCode(orderCode);
         var orderDto = objectMapper.convertValue(order, OrderDTO.class);
         orderDto.setProducts(products);
-        orderDto.setPaymentTransactions(paymentTransactions);
         return orderDto;
     }
 
@@ -64,27 +57,27 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForProductSku(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForProductSku(LocalDateTime from, LocalDateTime to) {
         return orderProductRepository.statForSku(from, to);
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
         return orderProductRepository.statForProductCode(from, to);
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to) {
         return orderProductRepository.statForDesignCode(from, to);
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
         return orderProductRepository.statForSupplier(from, to);
     }
 
     @Override
-    public List<RevenueSpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
+    public List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
         return orderProductRepository.statForSeller(from, to);
     }
 

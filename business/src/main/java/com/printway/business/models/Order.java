@@ -18,7 +18,7 @@ public class Order {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue
-    private int id;
+    private long id;
 
     @Basic
     @Column(name = "code", nullable = true, length = 50)
@@ -29,12 +29,8 @@ public class Order {
     private String name;
 
     @Basic
-    @Column(name = "sub_total_price", nullable = true, precision = 0)
-    private Double subTotalPrice;
-
-    @Basic
-    @Column(name = "total_price", nullable = true, precision = 0)
-    private Double totalPrice;
+    @Column(name = "revenue", nullable = true, precision = 0)
+    private Double revenue;
 
     @Basic
     @Column(name = "paygate_name", nullable = true, length = 45)
@@ -59,4 +55,8 @@ public class Order {
     @Basic
     @Column(name = "closed_at", nullable = true)
     private LocalDateTime closedAt;
+
+    @Basic
+    @Column(name = "store_id", nullable = false, length = 100)
+    private Integer storeId;
 }

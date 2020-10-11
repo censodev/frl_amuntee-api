@@ -30,27 +30,16 @@ class BusinessApplicationTests {
 
 	@Test
 	void testFetchShopifyOrder() {
-		var res = shopifyService.fetchListOrder("", 10);
-		log.info(res.toString());
-	}
-
-	@Test
-	void testFetchShopifyPaymentTransaction() {
-		var res = shopifyService.fetchListPaymentTransaction("", 10);
+		var from = TimeParser.parseEpochMillisToLocalDateTime(1600032915000L);
+//		var res = shopifyService.fetchListOrder(1, from, 10);
+		var res = shopifyService.fetchListOrder(9, null, 250);
 		log.info(res.toString());
 	}
 
 	@Test
 	void testSyncShopifyOrders() {
-//		var rs = syncService.syncShopifyOrders(10, true);
-		var rs = syncService.syncShopifyOrders(100, false);
-		log.info(String.valueOf(rs));
-	}
-
-	@Test
-	void testSyncShopifyPaymentTransactions() {
-//		var rs = syncService.syncShopifyPaymentTransactions(10, true);
-		var rs = syncService.syncShopifyPaymentTransactions(200, false);
+//		var rs = syncService.syncShopifyOrders(250, true);
+		var rs = syncService.syncShopifyOrders(250, false);
 		log.info(String.valueOf(rs));
 	}
 

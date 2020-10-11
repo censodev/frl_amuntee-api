@@ -26,10 +26,10 @@ public class UserController {
     PasswordEncoder passwordEncoder;
 
     @GetMapping("")
-    public Page<User> listUsers(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "10") int limit,
-                                @RequestParam(defaultValue = "id") String orderBy,
-                                @RequestParam(defaultValue = "asc") String order) {
+    public Page<User> list(@RequestParam(defaultValue = "0") int page,
+                           @RequestParam(defaultValue = "10") int limit,
+                           @RequestParam(defaultValue = "id") String orderBy,
+                           @RequestParam(defaultValue = "asc") String order) {
         var sort = order.equals("asc")
                 ? Sort.by(orderBy).ascending()
                 : Sort.by(orderBy).descending();
@@ -37,12 +37,12 @@ public class UserController {
     }
 
     @GetMapping("{id}")
-    public User findUser(@PathVariable() long id) {
+    public User findOne(@PathVariable() long id) {
         return userRepository.findById(id).orElse(null);
     }
 
     @PostMapping("")
-    public User addUser(@RequestBody UserStoreRequest request) {
+    public User add(@RequestBody UserStoreRequest request) {
         try {
             var user = objectMapper.convertValue(request, User.class);
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -54,8 +54,8 @@ public class UserController {
     }
 
     @PutMapping("{id}")
-    public User updateUser(@PathVariable() long id,
-                           @RequestBody UserStoreRequest request) {
+    public User update(@PathVariable() long id,
+                       @RequestBody UserStoreRequest request) {
         try {
             var user = objectMapper.convertValue(request, User.class);
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @DeleteMapping("{id}")
-    public User deleteUser(@PathVariable() long id) {
+    public User delete(@PathVariable() long id) {
         try {
             var user = userRepository.findById(id).orElse(null);
             if (user == null)

@@ -35,4 +35,8 @@ public class Supplier {
     @Basic
     @Column(name = "email", nullable = true, length = 150)
     private String email;
+
+    @Basic
+    @Column(name = "status", columnDefinition = "integer default 1")
+    private Integer status;
 }

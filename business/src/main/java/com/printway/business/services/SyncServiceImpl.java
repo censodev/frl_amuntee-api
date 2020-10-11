@@ -1,13 +1,11 @@
 package com.printway.business.services;
 
 import com.printway.business.dto.shopify.ShopifyOrder;
-import com.printway.business.dto.shopify.ShopifyPaymentTransaction;
 import com.printway.business.models.Order;
 import com.printway.business.models.OrderProduct;
-import com.printway.business.models.PaymentTransaction;
 import com.printway.business.repositories.OrderProductRepository;
 import com.printway.business.repositories.OrderRepository;
-import com.printway.business.repositories.PaymentTransactionRepository;
+import com.printway.business.repositories.StoreRepository;
 import com.printway.business.utils.SkuUtil;
 import com.printway.common.time.TimeParser;
 import lombok.extern.slf4j.Slf4j;
@@ -28,19 +26,29 @@ public class SyncServiceImpl implements SyncService {
     private ShopifyService shopifyService;
 
     @Autowired
-    private PaymentTransactionRepository paymentTransactionRepository;
+    private OrderProductRepository orderProductRepository;
 
     @Autowired
-    private OrderProductRepository orderProductRepository;
+    private StoreRepository storeRepository;
 
     @Override
     public boolean syncShopifyOrders(int limit, boolean testMode) {
         try {
-            var lastOrder = orderRepository.findTopByOrderByCodeDesc();
-            var sinceId = lastOrder != null ? lastOrder.getCode() : "";
-            var shopifyOrders = shopifyService.fetchListOrder(sinceId, limit);
-            saveOrders(shopifyOrders, testMode);
-            saveOrderProducts(shopifyOrders, testMode);
+            var stores = storeRepository.findAll();
+            for (var store : stores) {
+                var shopifyOrders = shopifyService
+                        .fetchListOrder(store.getId(), store.getSyncTime(), limit);
+                saveOrders(store.getId(), shopifyOrders, testMode);
+                saveOrderProducts(shopifyOrders, testMode);
+
+                if (!testMode) {
+                    var syncTime = TimeParser
+                            .parseZonedDateTimeToLocalDateTime(shopifyOrders.get(shopifyOrders.size() - 1).getCreatedAt());
+                    store.setSyncTime(syncTime);
+                }
+
+            }
+            storeRepository.saveAll(stores);
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
@@ -48,22 +56,7 @@ public class SyncServiceImpl implements SyncService {
         return true;
     }
 
-    @Override
-    public boolean syncShopifyPaymentTransactions(int limit, boolean testMode) {
-        try {
-            var lastPaymentTransaction = paymentTransactionRepository.findTopByOrderByCodeDesc();
-            var sinceId = lastPaymentTransaction != null ? lastPaymentTransaction.getCode() : "";
-            var shopifyPaymentTransactions = shopifyService
-                    .fetchListPaymentTransaction(sinceId, limit);
-            savePaymentTransactions(shopifyPaymentTransactions, testMode);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    private void saveOrders(List<ShopifyOrder> shopifyOrders, boolean testMode) {
+    private void saveOrders(int storeId, List<ShopifyOrder> shopifyOrders, boolean testMode) {
         if (shopifyOrders.isEmpty())
             return;
         var orders = shopifyOrders.stream()
@@ -72,13 +65,13 @@ public class SyncServiceImpl implements SyncService {
                     order.setCode(shopifyOrder.getCode());
                     order.setName(shopifyOrder.getName());
                     order.setPaygateName(shopifyOrder.getPaygateName());
-                    order.setSubTotalPrice(shopifyOrder.getSubTotalPrice());
-                    order.setTotalPrice(shopifyOrder.getTotalPrice());
+                    order.setRevenue(shopifyOrder.getSubTotalPrice());
                     order.setFinancialStatus(shopifyOrder.getFinancialStatus());
                     order.setFulfillmentStatus(shopifyOrder.getFulfillmentStatus());
                     order.setCreatedAt(TimeParser.parseZonedDateTimeToLocalDateTime(shopifyOrder.getCreatedAt()));
                     order.setUpdatedAt(TimeParser.parseZonedDateTimeToLocalDateTime(shopifyOrder.getUpdatedAt()));
                     order.setClosedAt(TimeParser.parseZonedDateTimeToLocalDateTime(shopifyOrder.getClosedAt()));
+                    order.setStoreId(storeId);
                     return order;
                 })
                 .collect(Collectors.toList());
@@ -101,7 +94,10 @@ public class SyncServiceImpl implements SyncService {
                                 var product = new OrderProduct();
                                 product.setOrderCode(shopifyOrder.getCode());
                                 product.setQuantity(prd.getQuantity());
-                                product.setSku(prd.getSku());
+                                var sku = prd.getSku() == null
+                                        ? null
+                                        : prd.getSku().replace(" ", "");
+                                product.setSku(sku);
                                 product.setTitle(prd.getTitle());
                                 product.setPrice(prd.getPriceSet().getPresentmentMoney().getAmount());
 
@@ -123,28 +119,6 @@ public class SyncServiceImpl implements SyncService {
         log.info(orderProducts.toString());
         if (!testMode) {
             orderProductRepository.saveAll(orderProducts);
-        }
-    }
-
-    private void savePaymentTransactions(List<ShopifyPaymentTransaction> shopifyPaymentTransactions, boolean testMode) {
-        if (shopifyPaymentTransactions.isEmpty())
-            return;
-        var paymentTransactions = shopifyPaymentTransactions.stream()
-                .map(shopifyPaymentTransaction -> {
-                    var trans = new PaymentTransaction();
-                    trans.setCode(shopifyPaymentTransaction.getCode());
-                    trans.setType(shopifyPaymentTransaction.getType());
-                    trans.setSourceType(shopifyPaymentTransaction.getSourceType());
-                    trans.setAmount(shopifyPaymentTransaction.getAmount());
-                    trans.setFee(shopifyPaymentTransaction.getFee());
-                    trans.setNet(shopifyPaymentTransaction.getNet());
-                    trans.setOrderCode(shopifyPaymentTransaction.getOrderCode());
-                    return trans;
-                })
-                .collect(Collectors.toList());
-        log.info(paymentTransactions.toString());
-        if (!testMode) {
-            paymentTransactionRepository.saveAll(paymentTransactions);
         }
     }
 }
