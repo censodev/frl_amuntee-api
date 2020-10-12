@@ -41,6 +41,7 @@ public class ProductController {
     public Product add(@RequestBody ProductStoreRequest request) {
         try {
             var prd = objectMapper.convertValue(request, Product.class);
+            prd.setStatus(1);
             return productRepository.save(prd);
         } catch (Exception ex) {
             log.error(ex.getMessage());

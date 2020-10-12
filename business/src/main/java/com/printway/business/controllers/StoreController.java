@@ -42,6 +42,7 @@ public class StoreController {
     public Store add(@RequestBody StoreStoreRequest request) {
         try {
             var str = objectMapper.convertValue(request, Store.class);
+            str.setStatus(1);
             return storeRepository.save(str);
         } catch (Exception ex) {
             log.error(ex.getMessage());

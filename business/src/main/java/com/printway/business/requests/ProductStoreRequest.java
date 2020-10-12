@@ -1,8 +1,10 @@
 package com.printway.business.requests;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductStoreRequest {
     private String code;
     private String name;
