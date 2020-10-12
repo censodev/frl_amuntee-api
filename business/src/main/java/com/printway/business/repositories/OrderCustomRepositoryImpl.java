@@ -58,6 +58,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                     "            group by ord.code) bcf\n" +
                     "            on bcf.code = ord.code\n" +
                     "        where ord.created_at between date(:from) and date(:to)\n" +
+                    "            and ord.financial_status = 'paid'\n" +
                     "            and ord.store_id = :storeId\n" +
                     "        group by year, month\n" +
                     "        ;"
@@ -80,6 +81,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                     "            group by ord.code) bcf\n" +
                     "            on bcf.code = ord.code\n" +
                     "        where ord.created_at between date(:from) and date(:to)\n" +
+                    "            and ord.financial_status = 'paid'\n" +
                     "        group by year, month\n" +
                     "        ;";
         var query = em.createNativeQuery(sql);
