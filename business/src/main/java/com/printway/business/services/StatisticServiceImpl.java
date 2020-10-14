@@ -28,28 +28,23 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<SpecificStatistic> statForProductSku(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForSku(from, to);
+    public List<SpecificStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return orderProductRepository.statForProductType(from, to, storeId);
     }
 
     @Override
-    public List<SpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForProductCode(from, to);
+    public List<SpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return orderProductRepository.statForProductDesign(from, to, storeId);
     }
 
     @Override
-    public List<SpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForDesignCode(from, to);
+    public List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return orderProductRepository.statForSupplier(from, to, storeId);
     }
 
     @Override
-    public List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForSupplier(from, to);
-    }
-
-    @Override
-    public List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
-        return orderProductRepository.statForSeller(from, to);
+    public List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return orderProductRepository.statForSeller(from, to, storeId);
     }
 
 }

@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
-
 @SpringBootTest
 @Slf4j
 class BusinessApplicationTests {
@@ -60,15 +58,13 @@ class BusinessApplicationTests {
 		log.info("TO: " + to.toString());
 		var stat = statisticService.statForSummary(from, to, null);
 		log.info("STAT SUMMARY: " + stat.toString());
-		var stat2 = statisticService.statForProductSku(null, null);
-		log.info("STAT SKU: " + stat2.toString());
-		stat2 = statisticService.statForProductCode(null, null);
-		log.info("STAT PRD CODE: " + stat2.toString());
-		stat2 = statisticService.statForProductDesign(null, null);
+		var stat2 = statisticService.statForProductType(from, to, null);
+		log.info("STAT PRD TYPE: " + stat2.toString());
+		stat2 = statisticService.statForProductDesign(from, to, null);
 		log.info("STAT PRD DESIGN: " + stat2.toString());
-		stat2 = statisticService.statForSupplier(null, null);
+		stat2 = statisticService.statForSupplier(from, to, null);
 		log.info("STAT SUPPLIER: " + stat2.toString());
-		stat2 = statisticService.statForSeller(null, null);
+		stat2 = statisticService.statForSeller(from, to, null);
 		log.info("STAT SELLER: " + stat2.toString());
 	}
 

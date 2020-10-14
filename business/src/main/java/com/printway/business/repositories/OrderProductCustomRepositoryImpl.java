@@ -1,7 +1,7 @@
 package com.printway.business.repositories;
 
 import com.printway.business.dto.statistic.SpecificStatistic;
-import com.printway.business.utils.BusinessUtil;
+import com.printway.common.time.TimeParser;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -16,154 +16,85 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     private EntityManager em;
 
     @Override
-    public List<SpecificStatistic> statForSku(LocalDateTime from, LocalDateTime to) {
-        /**
-         * select
-         * 	year(ord.created_at) year,
-         * 	month(ord.created_at) month,
-         * 	ordprd.sku,
-         * 	sum(ordprd.quantity) quantity,
-         * 	sum(ordprd.price * ordprd.quantity) revenue
-         * from orders_products ordprd
-         * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.sku, year, month
-         * order by year desc, month desc, revenue desc;
-         */
-        String query = "select\n" +
-                "\tyear(ord.created_at) year,\n" +
-                "\tmonth(ord.created_at) month,\n" +
-                "\tordprd.sku,\n" +
-                "\tsum(ordprd.quantity) quantity,\n" +
-                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
-                "from orders_products ordprd\n" +
-                "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.sku, year, month\n" +
-                "order by year desc, month desc, revenue desc;";
-        return getStatistic(query);
-    }
+    public List<SpecificStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId) {
+//        select
+//        ordprd.product_code,
+//                count(ordprd.order_code),
+//                sum(ordprd.quantity),
+//                sum(ordprd.price * ordprd.quantity)
+//        from orders_products ordprd
+//        join orders ord
+//        on ordprd.order_code = ord.code
+//        where ord.created_at between date(:from) and date(:to)
+//        and ord.revenue > 0
+//        and ord.financial_status = 'paid'
+//        and ord.store_id = :storeId
+//        group by ordprd.product_code
+//        order by count(ordprd.order_code) desc
+//        ;
+        var sql = storeId != null
+                ?   "select\n" +
+                    "    ordprd.product_code,\n" +
+                    "    count(ordprd.order_code),\n" +
+                    "    sum(ordprd.quantity),\n" +
+                    "    sum(ordprd.price * ordprd.quantity)\n" +
+                    "from orders_products ordprd\n" +
+                    "join orders ord\n" +
+                    "    on ordprd.order_code = ord.code\n" +
+                    "where ord.created_at between date(:from) and date(:to)\n" +
+                    "    and ord.revenue > 0\n" +
+                    "    and ord.financial_status = 'paid'\n" +
+                    "    and ord.store_id = :storeId\n" +
+                    "group by ordprd.product_code\n" +
+                    "order by count(ordprd.order_code) desc" +
+                    ";"
 
-    @Override
-    public List<SpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to) {
-        /**
-         * select
-         * 	year(ord.created_at) year,
-         * 	month(ord.created_at) month,
-         * 	ordprd.product_code,
-         * 	sum(ordprd.quantity) quantity,
-         * 	sum(ordprd.price * ordprd.quantity) revenue
-         * from orders_products ordprd
-         * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.product_code, year, month
-         * order by year desc, month desc, revenue desc;
-         */
-        String query = "select\n" +
-                "\tyear(ord.created_at) year,\n" +
-                "\tmonth(ord.created_at) month,\n" +
-                "\tordprd.product_code,\n" +
-                "\tsum(ordprd.quantity) quantity,\n" +
-                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
-                "from orders_products ordprd\n" +
-                "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.product_code, year, month\n" +
-                "order by year desc, month desc, revenue desc;";
-        return getStatistic(query);
-    }
-
-    @Override
-    public List<SpecificStatistic> statForDesignCode(LocalDateTime from, LocalDateTime to) {
-        /**
-         * select
-         * 	year(ord.created_at) year,
-         * 	month(ord.created_at) month,
-         * 	ordprd.design_code,
-         * 	sum(ordprd.quantity) quantity,
-         * 	sum(ordprd.price * ordprd.quantity) revenue
-         * from orders_products ordprd
-         * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.design_code, year, month
-         * order by year desc, month desc, revenue desc;
-         */
-        String query = "select\n" +
-                "\tyear(ord.created_at) year,\n" +
-                "\tmonth(ord.created_at) month,\n" +
-                "\tordprd.design_code,\n" +
-                "\tsum(ordprd.quantity) quantity,\n" +
-                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
-                "from orders_products ordprd\n" +
-                "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.design_code, year, month\n" +
-                "order by year desc, month desc, revenue desc;";
-        return getStatistic(query);
-    }
-
-    @Override
-    public List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to) {
-        /**
-         * select
-         * 	year(ord.created_at) year,
-         * 	month(ord.created_at) month,
-         * 	ordprd.seller_code,
-         * 	sum(ordprd.quantity) quantity,
-         * 	sum(ordprd.price * ordprd.quantity) revenue
-         * from orders_products ordprd
-         * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.seller_code, year, month
-         * order by year desc, month desc, revenue desc;
-         */
-        String query = "select\n" +
-                "\tyear(ord.created_at) year,\n" +
-                "\tmonth(ord.created_at) month,\n" +
-                "\tordprd.seller_code,\n" +
-                "\tsum(ordprd.quantity) quantity,\n" +
-                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
-                "from orders_products ordprd\n" +
-                "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.seller_code, year, month\n" +
-                "order by year desc, month desc, revenue desc;";
-        return getStatistic(query);
-    }
-
-    @Override
-    public List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to) {
-        /**
-         * select
-         * 	year(ord.created_at) year,
-         * 	month(ord.created_at) month,
-         * 	ordprd.supplier_code,
-         * 	sum(ordprd.quantity) quantity,
-         * 	sum(ordprd.price * ordprd.quantity) revenue
-         * from orders_products ordprd
-         * join orders ord on ordprd.order_code = ord.code
-         * group by ordprd.supplier_code, year, month
-         * order by year desc, month desc, revenue desc;
-         */
-        String query = "select\n" +
-                "\tyear(ord.created_at) year,\n" +
-                "\tmonth(ord.created_at) month,\n" +
-                "\tordprd.supplier_code,\n" +
-                "\tsum(ordprd.quantity) quantity,\n" +
-                "\tsum(ordprd.price * ordprd.quantity) revenue\n" +
-                "from orders_products ordprd\n" +
-                "join orders ord on ordprd.order_code = ord.code\n" +
-                "group by ordprd.supplier_code, year, month\n" +
-                "order by year desc, month desc, revenue desc;";
-        return getStatistic(query);
-    }
-
-    private List<SpecificStatistic> getStatistic(String query) {
-        List<Object[]> rsList = em.createNativeQuery(query).getResultList();
+                :   "select\n" +
+                    "    ordprd.product_code,\n" +
+                    "    count(ordprd.order_code),\n" +
+                    "    sum(ordprd.quantity),\n" +
+                    "    sum(ordprd.price * ordprd.quantity)\n" +
+                    "from orders_products ordprd\n" +
+                    "join orders ord\n" +
+                    "    on ordprd.order_code = ord.code\n" +
+                    "where ord.created_at between date(:from) and date(:to)\n" +
+                    "    and ord.revenue > 0\n" +
+                    "    and ord.financial_status = 'paid'\n" +
+                    "group by ordprd.product_code\n" +
+                    "order by count(ordprd.order_code) desc" +
+                    ";";
+        var query = em.createNativeQuery(sql);
+        query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(from));
+        query.setParameter("to", TimeParser.parseLocalDateTimeToISOString(to));
+        if (storeId != null) {
+            query.setParameter("storeId", storeId);
+        }
+        List<Object[]> rsList = query.getResultList();
         var rs = new ArrayList<SpecificStatistic>();
         for (Object[] obj : rsList) {
             var stat = new SpecificStatistic();
-            stat.setYear(obj[0] == null ? null : Integer.parseInt(String.valueOf(obj[0])));
-            stat.setMonth(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
-            stat.setTitle(obj[2] == null ? null : String.valueOf(obj[2]));
-            stat.setQuantity(Integer.parseInt(String.valueOf(obj[3])));
-            stat.setRevenue(Math.round((double) obj[4] * 100) / 100.00);
-            stat.setStoreFee(BusinessUtil.calcStoreFee((double) obj[4]));
+            stat.setTitle(obj[0] == null ? null : String.valueOf(obj[0]));
+            stat.setOrderCount(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
+            stat.setProductQuantity(obj[2] == null ? null : Integer.parseInt(String.valueOf(obj[2])));
+            stat.setRevenue(Math.round((double) obj[3] * 100) / 100.00);
             rs.add(stat);
         }
         return rs;
+    }
+
+    @Override
+    public List<SpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return null;
+    }
+
+    @Override
+    public List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return null;
+    }
+
+    @Override
+    public List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        return null;
     }
 
 }

@@ -9,9 +9,8 @@ import java.util.List;
 
 public interface StatisticService {
     List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<SpecificStatistic> statForProductSku(LocalDateTime from, LocalDateTime to);
-    List<SpecificStatistic> statForProductCode(LocalDateTime from, LocalDateTime to);
-    List<SpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to);
-    List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to);
-    List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to);
+    List<SpecificStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId);
+    List<SpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId);
+    List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId);
+    List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId);
 }

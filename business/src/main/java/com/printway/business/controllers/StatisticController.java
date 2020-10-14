@@ -24,28 +24,39 @@ public class StatisticController {
         return statisticService.statForSummary(fromTime, toTime, storeId);
     }
 
-    @GetMapping("product-sku")
-    public List<SpecificStatistic> statForProductSku() {
-        return statisticService.statForProductSku(null, null);
-    }
-
-    @GetMapping("product-code")
-    public List<SpecificStatistic> statForProductCode() {
-        return statisticService.statForProductCode(null, null);
+    @GetMapping("product-type")
+    public List<SpecificStatistic> statForProductType(@RequestParam long from,
+                                                      @RequestParam long to,
+                                                      @RequestParam(defaultValue = "") Integer storeId) {
+        var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
+        var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
+        return statisticService.statForProductType(fromTime, toTime, storeId);
     }
 
     @GetMapping("product-design")
-    public List<SpecificStatistic> statForProductDesign() {
-        return statisticService.statForProductDesign(null, null);
+    public List<SpecificStatistic> statForProductDesign(@RequestParam long from,
+                                                        @RequestParam long to,
+                                                        @RequestParam(defaultValue = "") Integer storeId) {
+        var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
+        var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
+        return statisticService.statForProductDesign(fromTime, toTime, storeId);
     }
 
     @GetMapping("seller")
-    public List<SpecificStatistic> statForSeller() {
-        return statisticService.statForSeller(null, null);
+    public List<SpecificStatistic> statForSeller(@RequestParam long from,
+                                                 @RequestParam long to,
+                                                 @RequestParam(defaultValue = "") Integer storeId) {
+        var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
+        var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
+        return statisticService.statForSeller(fromTime, toTime, storeId);
     }
 
     @GetMapping("supplier")
-    public List<SpecificStatistic> statForSupplier() {
-        return statisticService.statForSupplier(null, null);
+    public List<SpecificStatistic> statForSupplier(@RequestParam long from,
+                                                   @RequestParam long to,
+                                                   @RequestParam(defaultValue = "") Integer storeId) {
+        var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
+        var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
+        return statisticService.statForSupplier(fromTime, toTime, storeId);
     }
 }

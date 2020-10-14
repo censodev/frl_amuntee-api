@@ -9,7 +9,7 @@ public class SpecificStatistic {
     private Integer year;
     private Integer month;
     private String title;
-    private Integer quantity;
+    private Integer productQuantity;
     private Double revenue;
-    private Double storeFee;
+    private Integer orderCount;
 }
