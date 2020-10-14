@@ -25,9 +25,9 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
 //        from orders_products ordprd
 //        join orders ord
 //        on ordprd.order_code = ord.code
-//        join products prd
+//        left join products prd
 //        on prd.code = ordprd.product_code
-//        join product_types prdt
+//        left join product_types prdt
 //        on prdt.id = prd.type_id
 //        where ord.revenue > 0
 //        and ord.financial_status = 'paid'
@@ -45,9 +45,9 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
                     "from orders_products ordprd\n" +
                     "join orders ord\n" +
                     "    on ordprd.order_code = ord.code\n" +
-                    "join products prd\n" +
+                    "left join products prd\n" +
                     "    on prd.code = ordprd.product_code\n" +
-                    "join product_types prdt\n" +
+                    "left join product_types prdt\n" +
                     "    on prdt.id = prd.type_id\n" +
                     "where ord.revenue > 0\n" +
                     "    and ord.financial_status = 'paid'\n" +
@@ -65,9 +65,9 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
                     "from orders_products ordprd\n" +
                     "join orders ord\n" +
                     "    on ordprd.order_code = ord.code\n" +
-                    "join products prd\n" +
+                    "left join products prd\n" +
                     "    on prd.code = ordprd.product_code\n" +
-                    "join product_types prdt\n" +
+                    "left join product_types prdt\n" +
                     "    on prdt.id = prd.type_id\n" +
                     "where ord.revenue > 0\n" +
                     "    and ord.financial_status = 'paid'\n" +
@@ -88,7 +88,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
             stat.setTitle(obj[0] == null ? null : String.valueOf(obj[0]));
             stat.setOrderCount(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
             stat.setProductQuantity(obj[2] == null ? null : Integer.parseInt(String.valueOf(obj[2])));
-            stat.setRevenue(Math.round((double) obj[3] * 100) / 100.00);
+            stat.setRevenue(obj[3] == null ? null : Math.round((double) obj[3] * 100) / 100.00);
             rs.add(stat);
         }
         return rs;
