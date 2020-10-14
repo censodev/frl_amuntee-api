@@ -2,8 +2,11 @@ package com.printway.business.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.printway.business.models.Product;
+import com.printway.business.models.ProductType;
 import com.printway.business.repositories.ProductRepository;
+import com.printway.business.repositories.ProductTypeRepository;
 import com.printway.business.requests.ProductStoreRequest;
+import com.printway.business.requests.ProductTypeStoreRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProductTypeRepository productTypeRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -70,6 +76,41 @@ public class ProductController {
                 return null;
             prd.setStatus(0);
             return productRepository.save(prd);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
+    @GetMapping("type")
+    public Page<ProductType> listTypes(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "10") int limit,
+                                      @RequestParam(defaultValue = "id") String orderBy,
+                                      @RequestParam(defaultValue = "asc") String order) {
+        var sort = order.equals("asc")
+                ? Sort.by(orderBy).ascending()
+                : Sort.by(orderBy).descending();
+        return productTypeRepository.findAll(PageRequest.of(page, limit, sort));
+    }
+
+    @PostMapping("type")
+    public ProductType addType(@RequestBody ProductTypeStoreRequest request) {
+        try {
+            var prd = objectMapper.convertValue(request, ProductType.class);
+            return productTypeRepository.save(prd);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            throw ex;
+        }
+    }
+
+    @PutMapping("type/{id}")
+    public ProductType updateType(@PathVariable() int id,
+                              @RequestBody ProductTypeStoreRequest request) {
+        try {
+            var prd = objectMapper.convertValue(request, ProductType.class);
+            prd.setId(id);
+            return productTypeRepository.save(prd);
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw ex;
