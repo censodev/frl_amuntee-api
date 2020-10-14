@@ -12,6 +12,7 @@ import lombok.ToString;
 public class SummaryStatistic {
     private Integer year;
     private Integer month;
+    private Integer day;
     private Double revenue;
     private Double marketingFee;
     private Double storeFee;
