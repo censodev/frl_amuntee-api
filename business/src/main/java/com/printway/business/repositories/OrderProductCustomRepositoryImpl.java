@@ -18,50 +18,62 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     @Override
     public List<SpecificStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId) {
 //        select
-//        ordprd.product_code,
+//        prdt.name,
 //                count(ordprd.order_code),
 //                sum(ordprd.quantity),
 //                sum(ordprd.price * ordprd.quantity)
 //        from orders_products ordprd
 //        join orders ord
 //        on ordprd.order_code = ord.code
-//        where ord.created_at between date(:from) and date(:to)
-//        and ord.revenue > 0
+//        join products prd
+//        on prd.code = ordprd.product_code
+//        join product_types prdt
+//        on prdt.id = prd.type_id
+//        where ord.revenue > 0
 //        and ord.financial_status = 'paid'
+//        and ord.created_at between date(:from) and date(:to)
 //        and ord.store_id = :storeId
-//        group by ordprd.product_code
+//        group by prdt.name
 //        order by count(ordprd.order_code) desc
 //        ;
         var sql = storeId != null
                 ?   "select\n" +
-                    "    ordprd.product_code,\n" +
+                    "    prdt.name,\n" +
                     "    count(ordprd.order_code),\n" +
                     "    sum(ordprd.quantity),\n" +
                     "    sum(ordprd.price * ordprd.quantity)\n" +
                     "from orders_products ordprd\n" +
                     "join orders ord\n" +
                     "    on ordprd.order_code = ord.code\n" +
-                    "where ord.created_at between date(:from) and date(:to)\n" +
-                    "    and ord.revenue > 0\n" +
+                    "join products prd\n" +
+                    "    on prd.code = ordprd.product_code\n" +
+                    "join product_types prdt\n" +
+                    "    on prdt.id = prd.type_id\n" +
+                    "where ord.revenue > 0\n" +
                     "    and ord.financial_status = 'paid'\n" +
+                    "    and ord.created_at between date(:from) and date(:to)\n" +
                     "    and ord.store_id = :storeId\n" +
-                    "group by ordprd.product_code\n" +
-                    "order by count(ordprd.order_code) desc" +
+                    "group by prdt.name\n" +
+                    "order by count(ordprd.order_code) desc\n" +
                     ";"
 
                 :   "select\n" +
-                    "    ordprd.product_code,\n" +
+                    "    prdt.name,\n" +
                     "    count(ordprd.order_code),\n" +
                     "    sum(ordprd.quantity),\n" +
                     "    sum(ordprd.price * ordprd.quantity)\n" +
                     "from orders_products ordprd\n" +
                     "join orders ord\n" +
                     "    on ordprd.order_code = ord.code\n" +
-                    "where ord.created_at between date(:from) and date(:to)\n" +
-                    "    and ord.revenue > 0\n" +
+                    "join products prd\n" +
+                    "    on prd.code = ordprd.product_code\n" +
+                    "join product_types prdt\n" +
+                    "    on prdt.id = prd.type_id\n" +
+                    "where ord.revenue > 0\n" +
                     "    and ord.financial_status = 'paid'\n" +
-                    "group by ordprd.product_code\n" +
-                    "order by count(ordprd.order_code) desc" +
+                    "    and ord.created_at between date(:from) and date(:to)\n" +
+                    "group by prdt.name\n" +
+                    "order by count(ordprd.order_code) desc\n" +
                     ";";
         var query = em.createNativeQuery(sql);
         query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(from));

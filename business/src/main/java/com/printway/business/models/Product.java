@@ -20,7 +20,7 @@ public class Product {
     private int id;
 
     @Basic
-    @Column(name = "code", nullable = true, length = 20)
+    @Column(name = "code", nullable = true, length = 20, unique = true)
     private String code;
 
     @Basic

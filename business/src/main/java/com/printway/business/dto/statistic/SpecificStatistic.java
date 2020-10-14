@@ -6,10 +6,8 @@ import lombok.ToString;
 @Data
 @ToString
 public class SpecificStatistic {
-    private Integer year;
-    private Integer month;
     private String title;
+    private Integer orderCount;
     private Integer productQuantity;
     private Double revenue;
-    private Integer orderCount;
 }
