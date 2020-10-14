@@ -18,3 +18,9 @@ zuul:
     product:
       url: http://localhost:8002/api/product
       path: /api/product/**
+    product-type:
+      url: http://localhost:8002/api/product-type
+      path: /api/product-type/**
+    supplier:
+      url: http://localhost:8002/api/supplier
+      path: /api/supplier/**

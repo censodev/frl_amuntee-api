@@ -17,7 +17,7 @@ public class Supplier {
     private int id;
 
     @Basic
-    @Column(name = "code", nullable = true, length = 20)
+    @Column(name = "code", unique = true)
     private String code;
 
     @Basic

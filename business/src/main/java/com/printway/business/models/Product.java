@@ -28,16 +28,8 @@ public class Product {
     private String name;
 
     @Basic
-    @Column(name = "type", nullable = true, length = 45)
-    private String type;
-
-    @Basic
     @Column(name = "base_cost", nullable = true, precision = 0)
     private Double baseCost;
-
-    @Basic
-    @Column(name = "supplier_code", nullable = true)
-    private String supplierCode;
 
     @Basic
     @Column(name = "shipping_time", length = 150)
@@ -67,4 +59,11 @@ public class Product {
     @Column(name = "status", columnDefinition = "integer default 1")
     private Integer status;
 
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private ProductType type;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
 }
