@@ -1,7 +1,8 @@
 package com.printway.business.services;
 
+import com.printway.business.dto.statistic.SellerStatistic;
 import com.printway.business.dto.statistic.SummaryStatistic;
-import com.printway.business.dto.statistic.SpecificStatistic;
+import com.printway.business.dto.statistic.ProductTypeStatistic;
 import com.printway.business.repositories.OrderProductRepository;
 import com.printway.business.repositories.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -28,22 +29,22 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<SpecificStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<ProductTypeStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId) {
         return orderProductRepository.statForProductType(from, to, storeId);
     }
 
     @Override
-    public List<SpecificStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<ProductTypeStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
         return orderProductRepository.statForProductDesign(from, to, storeId);
     }
 
     @Override
-    public List<SpecificStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<ProductTypeStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId) {
         return orderProductRepository.statForSupplier(from, to, storeId);
     }
 
     @Override
-    public List<SpecificStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<SellerStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId) {
         return orderProductRepository.statForSeller(from, to, storeId);
     }
 

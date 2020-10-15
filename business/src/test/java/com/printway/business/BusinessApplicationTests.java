@@ -60,12 +60,12 @@ class BusinessApplicationTests {
 		log.info("STAT SUMMARY: " + stat.toString());
 		var stat2 = statisticService.statForProductType(from, to, null);
 		log.info("STAT PRD TYPE: " + stat2.toString());
-		stat2 = statisticService.statForProductDesign(from, to, null);
-		log.info("STAT PRD DESIGN: " + stat2.toString());
-		stat2 = statisticService.statForSupplier(from, to, null);
-		log.info("STAT SUPPLIER: " + stat2.toString());
-		stat2 = statisticService.statForSeller(from, to, null);
-		log.info("STAT SELLER: " + stat2.toString());
+		var stat3 = statisticService.statForProductDesign(from, to, null);
+		log.info("STAT PRD DESIGN: " + stat3.toString());
+		var stat4 = statisticService.statForSupplier(from, to, null);
+		log.info("STAT SUPPLIER: " + stat4.toString());
+		var stat5 = statisticService.statForSeller(from, to, null);
+		log.info("STAT SELLER: " + stat5.toString());
 	}
 
 }

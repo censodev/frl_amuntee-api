@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 @ToString
-public class SpecificStatistic {
+public class ProductTypeStatistic {
     private String title;
     private Integer orderCount;
     private Integer productQuantity;
