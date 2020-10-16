@@ -17,4 +17,5 @@ public class SummaryStatistic {
     private Double marketingFee;
     private Double storeFee;
     private Double baseCostFee;
+    private Integer orderCount;
 }

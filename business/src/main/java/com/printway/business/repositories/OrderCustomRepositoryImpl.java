@@ -23,10 +23,11 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 //                month(ord.created_at) month,
 //                day(ord.created_at) day,
 //                sum(ord.revenue) revenue,
-//                sum(bcf.base_cost_fee) base_cost_fee
+//                sum(bcf.base_cost_fee) base_cost_fee,
+//                count(bcf.order_code) order_count
 //        from orders ord
 //        join (select
-//                ord.code,
+//                ord.code order_code,
 //                sum(prd.base_cost * oprd.quantity) base_cost_fee
 //                from orders ord
 //                join orders_products oprd
@@ -35,7 +36,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 //                on oprd.product_code = prd.code
 //                where ord.revenue > 0
 //                group by ord.code) bcf
-//        on bcf.code = ord.code
+//        on bcf.order_code = ord.code
 //        where ord.created_at between date(:from) and date(:to)
 //        and ord.store_id = :storeId
 //        group by year, month, day
@@ -47,10 +48,11 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                     "    month(ord.created_at) month,\n" +
                     "    day(ord.created_at) day,\n" +
                     "    sum(ord.revenue) revenue,\n" +
-                    "    sum(bcf.base_cost_fee) base_cost_fee\n" +
+                    "    sum(bcf.base_cost_fee) base_cost_fee,\n" +
+                    "    count(bcf.order_code) order_count\n" +
                     "from orders ord\n" +
                     "         join (select\n" +
-                    "                   ord.code,\n" +
+                    "                   ord.code order_code,\n" +
                     "                   sum(prd.base_cost * oprd.quantity) base_cost_fee\n" +
                     "               from orders ord\n" +
                     "                        join orders_products oprd\n" +
@@ -59,7 +61,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                     "                                  on oprd.product_code = prd.code\n" +
                     "               where ord.revenue > 0\n" +
                     "               group by ord.code) bcf\n" +
-                    "              on bcf.code = ord.code\n" +
+                    "              on bcf.order_code = ord.code\n" +
                     "where ord.created_at between date(:from) and date(:to)\n" +
                     "  and ord.store_id = :storeId\n" +
                     "group by year, month, day\n" +
@@ -71,10 +73,11 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                     "    month(ord.created_at) month,\n" +
                     "    day(ord.created_at) day,\n" +
                     "    sum(ord.revenue) revenue,\n" +
-                    "    sum(bcf.base_cost_fee) base_cost_fee\n" +
+                    "    sum(bcf.base_cost_fee) base_cost_fee,\n" +
+                    "    count(bcf.order_code) order_count\n" +
                     "from orders ord\n" +
                     "         join (select\n" +
-                    "                   ord.code,\n" +
+                    "                   ord.code order_code,\n" +
                     "                   sum(prd.base_cost * oprd.quantity) base_cost_fee\n" +
                     "               from orders ord\n" +
                     "                        join orders_products oprd\n" +
@@ -83,7 +86,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                     "                                  on oprd.product_code = prd.code\n" +
                     "               where ord.revenue > 0\n" +
                     "               group by ord.code) bcf\n" +
-                    "              on bcf.code = ord.code\n" +
+                    "              on bcf.order_code = ord.code\n" +
                     "where ord.created_at between date(:from) and date(:to)\n" +
                     "group by year, month, day\n" +
                     "order by year asc, month asc, day asc\n" +
@@ -106,6 +109,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
             stat.setRevenue(Math.round((double) obj[3] * 100) / 100.00);
             stat.setStoreFee(BusinessUtil.calcStoreFee((double) obj[3]));
             stat.setBaseCostFee(obj[4] == null ? null : Math.round((double) obj[4] * 100) / 100.00);
+            stat.setOrderCount(obj[5] == null ? null : Integer.parseInt(String.valueOf(obj[5])));
             rs.add(stat);
         }
         return rs;
