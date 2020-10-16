@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
@@ -54,6 +53,10 @@ public class Product {
     @Basic
     @Column(name = "updated_by", nullable = true)
     private Integer updatedBy;
+
+    @Basic
+    @Column(name = "picture", nullable = true, length = 4000)
+    private String picture;
 
     @Basic
     @Column(name = "status", columnDefinition = "integer default 1")

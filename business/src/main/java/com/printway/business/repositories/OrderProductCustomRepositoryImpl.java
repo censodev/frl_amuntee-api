@@ -1,5 +1,6 @@
 package com.printway.business.repositories;
 
+import com.printway.business.dto.statistic.ProductDesignStatistic;
 import com.printway.business.dto.statistic.ProductTypeStatistic;
 import com.printway.business.dto.statistic.SellerStatistic;
 import com.printway.business.utils.BusinessUtil;
@@ -97,8 +98,67 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     }
 
     @Override
-    public List<ProductTypeStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
-        return null;
+    public List<ProductDesignStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
+        var sql = storeId != null
+                ?   "select\n" +
+                    "    prd.name,\n" +
+                    "    ordprd.sku,\n" +
+                    "    ordprd.seller_code,\n" +
+                    "    prd.picture,\n" +
+                    "    sum(ordprd.quantity) productQuantity,\n" +
+                    "    sum(ordprd.price * ordprd.quantity) revenue\n" +
+                    "from orders_products ordprd\n" +
+                    "join orders ord\n" +
+                    "    on ordprd.order_code = ord.code\n" +
+                    "left join products prd\n" +
+                    "    on prd.code = ordprd.product_code\n" +
+                    "where ord.revenue > 0\n" +
+                    "    and ord.financial_status = 'paid'\n" +
+                    "    and ord.created_at between date(:from) and date(:to)\n" +
+                    "    and ord.store_id = :storeId\n" +
+                    "group by prd.name, ordprd.sku, ordprd.seller_code, prd.picture\n" +
+                    "order by sum(ordprd.price * ordprd.quantity) desc\n" +
+                    "limit 10\n" +
+                    ";"
+
+                :   "select\n" +
+                    "    prd.name,\n" +
+                    "    ordprd.sku,\n" +
+                    "    ordprd.seller_code,\n" +
+                    "    prd.picture,\n" +
+                    "    sum(ordprd.quantity) productQuantity,\n" +
+                    "    sum(ordprd.price * ordprd.quantity) revenue\n" +
+                    "from orders_products ordprd\n" +
+                    "join orders ord\n" +
+                    "    on ordprd.order_code = ord.code\n" +
+                    "left join products prd\n" +
+                    "    on prd.code = ordprd.product_code\n" +
+                    "where ord.revenue > 0\n" +
+                    "    and ord.financial_status = 'paid'\n" +
+                    "    and ord.created_at between date(:from) and date(:to)\n" +
+                    "group by prd.name, ordprd.sku, ordprd.seller_code, prd.picture\n" +
+                    "order by sum(ordprd.price * ordprd.quantity) desc\n" +
+                    "limit 10\n" +
+                    ";";
+        var query = em.createNativeQuery(sql);
+        query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(from));
+        query.setParameter("to", TimeParser.parseLocalDateTimeToISOString(to));
+        if (storeId != null) {
+            query.setParameter("storeId", storeId);
+        }
+        List<Object[]> rsList = query.getResultList();
+        var rs = new ArrayList<ProductDesignStatistic>();
+        for (Object[] obj : rsList) {
+            var stat = new ProductDesignStatistic();
+            stat.setProductName(obj[0] == null ? null : String.valueOf(obj[0]));
+            stat.setSku(obj[1] == null ? null : String.valueOf(obj[1]));
+            stat.setSellerName(obj[2] == null ? null : String.valueOf(obj[2]));
+            stat.setProductPicture(obj[3] == null ? null : String.valueOf(obj[3]));
+            stat.setProductQuantity(obj[4] == null ? null : Integer.parseInt(String.valueOf(obj[4])));
+            stat.setRevenue(obj[5] == null ? null : Math.round((double) obj[5] * 100) / 100.00);
+            rs.add(stat);
+        }
+        return rs;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.printway.business.controllers;
 
+import com.printway.business.dto.statistic.ProductDesignStatistic;
 import com.printway.business.dto.statistic.SellerStatistic;
 import com.printway.business.dto.statistic.SummaryStatistic;
 import com.printway.business.dto.statistic.ProductTypeStatistic;
@@ -35,9 +36,9 @@ public class StatisticController {
     }
 
     @GetMapping("product-design")
-    public List<ProductTypeStatistic> statForProductDesign(@RequestParam long from,
-                                                           @RequestParam long to,
-                                                           @RequestParam(defaultValue = "") Integer storeId) {
+    public List<ProductDesignStatistic> statForProductDesign(@RequestParam long from,
+                                                             @RequestParam long to,
+                                                             @RequestParam(defaultValue = "") Integer storeId) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
         return statisticService.statForProductDesign(fromTime, toTime, storeId);

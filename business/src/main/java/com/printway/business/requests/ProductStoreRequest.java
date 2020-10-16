@@ -5,7 +5,6 @@ import com.printway.business.models.ProductType;
 import com.printway.business.models.Supplier;
 import lombok.Data;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
@@ -16,6 +15,7 @@ public class ProductStoreRequest {
     private Double baseCost;
     private String shippingTime;
     private String processingTime;
+    private String picture;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer createdBy;

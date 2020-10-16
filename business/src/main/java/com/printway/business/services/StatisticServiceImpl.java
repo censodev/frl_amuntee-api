@@ -1,5 +1,6 @@
 package com.printway.business.services;
 
+import com.printway.business.dto.statistic.ProductDesignStatistic;
 import com.printway.business.dto.statistic.SellerStatistic;
 import com.printway.business.dto.statistic.SummaryStatistic;
 import com.printway.business.dto.statistic.ProductTypeStatistic;
@@ -34,7 +35,7 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<ProductTypeStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<ProductDesignStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
         return orderProductRepository.statForProductDesign(from, to, storeId);
     }
 
