@@ -1,5 +1,6 @@
 package com.printway.business;
 
+import com.printway.business.services.AccountService;
 import com.printway.business.services.StatisticService;
 import com.printway.business.services.ShopifyService;
 import com.printway.business.services.SyncService;
@@ -21,6 +22,9 @@ class BusinessApplicationTests {
 
 	@Autowired
 	SyncService syncService;
+
+	@Autowired
+	AccountService accountService;
 
 	@Test
 	void contextLoads() {
@@ -68,4 +72,9 @@ class BusinessApplicationTests {
 		log.info("STAT SELLER: " + stat5.toString());
 	}
 
+	@Test
+	public void testApiAuth() {
+		var rs = accountService.listAccount();
+		log.info(rs.toString());
+	}
 }

@@ -21,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
                 return Collections.singleton(new SimpleGrantedAuthority("ROLE_ADMIN"));
             case 2:
             default:
-                return Collections.singleton(new SimpleGrantedAuthority("ROLE_STAFF"));
+                return Collections.singleton(new SimpleGrantedAuthority("ROLE_SELLER"));
         }
 
     }

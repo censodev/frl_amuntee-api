@@ -55,4 +55,16 @@ public class User {
     private LocalDate dob;
 
     private int status;
+
+    private Double profit1;
+    private Double profit2;
+    private Double profit3;
+    private Double profit4;
+    private Double profit5;
+
+    private Double bonus1;
+    private Double bonus2;
+    private Double bonus3;
+    private Double bonus4;
+    private Double bonus5;
 }

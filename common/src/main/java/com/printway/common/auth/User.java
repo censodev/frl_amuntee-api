@@ -1,31 +1,32 @@
-package com.printway.auth.requests;
+package com.printway.common.auth;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.Data;
-import lombok.ToString;
 
 import java.time.LocalDate;
 
 @Data
-@ToString
-public class UserStoreRequest {
+public class User {
+    private Long id;
     private String username;
-    private String password;
-    private String fullname;
     private String code;
+    private String fullname;
     private String email;
     private String phone;
+    private int partnerId;
+    private int roleId;
+    private int positionId;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate dob;
-    private int partnerId;
-    private int roleId;
-    private int positionId;
+
     private int status;
 
     private Double profit1;
@@ -39,4 +40,5 @@ public class UserStoreRequest {
     private Double bonus3;
     private Double bonus4;
     private Double bonus5;
+
 }
