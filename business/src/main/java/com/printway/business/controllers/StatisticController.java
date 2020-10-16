@@ -1,9 +1,6 @@
 package com.printway.business.controllers;
 
-import com.printway.business.dto.statistic.ProductDesignStatistic;
-import com.printway.business.dto.statistic.SellerStatistic;
-import com.printway.business.dto.statistic.SummaryStatistic;
-import com.printway.business.dto.statistic.ProductTypeStatistic;
+import com.printway.business.dto.statistic.*;
 import com.printway.business.services.StatisticService;
 import com.printway.common.time.TimeParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +51,9 @@ public class StatisticController {
     }
 
     @GetMapping("supplier")
-    public List<ProductTypeStatistic> statForSupplier(@RequestParam long from,
-                                                      @RequestParam long to,
-                                                      @RequestParam(defaultValue = "") Integer storeId) {
+    public List<SupplierStatistic> statForSupplier(@RequestParam long from,
+                                                   @RequestParam long to,
+                                                   @RequestParam(defaultValue = "") Integer storeId) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
         return statisticService.statForSupplier(fromTime, toTime, storeId);
