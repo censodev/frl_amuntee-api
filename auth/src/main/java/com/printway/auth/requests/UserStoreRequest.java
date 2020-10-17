@@ -1,6 +1,7 @@
 package com.printway.auth.requests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 
 @Data
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserStoreRequest {
     private String username;
     private String password;
