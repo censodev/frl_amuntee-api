@@ -1,7 +1,7 @@
 package com.printway.common.auth;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -11,6 +11,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
     private Long id;
     private String username;

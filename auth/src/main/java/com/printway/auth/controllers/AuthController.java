@@ -5,10 +5,14 @@ import com.printway.auth.models.User;
 import com.printway.auth.repositories.UserRepository;
 import com.printway.auth.requests.AuthLoginRequest;
 import com.printway.auth.requests.AuthRegisterRequest;
+import com.printway.auth.requests.AuthResetPasswordRequest;
 import com.printway.common.auth.Credentials;
 import com.printway.common.auth.JwtProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +20,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,6 +38,9 @@ public class AuthController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     @PostMapping("login")
     public Object authenticate(@RequestBody AuthLoginRequest request) {
@@ -90,5 +98,50 @@ public class AuthController {
         }
 
         return true;
+    }
+
+    @PostMapping("request-password")
+    public ResponseEntity<Object> requestPassword(@RequestParam String email) {
+        try {
+            var user = userRepository.findByEmail(email);
+            if (user == null)
+                throw new Exception("Email not found");
+
+            var resetCode = String.valueOf(new Random().nextInt(999999));
+            user.setResetCode(resetCode);
+            userRepository.save(user);
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("noreply@printway.com");
+            message.setTo(user.getEmail());
+            message.setSubject("Printway Admin | Reset password");
+            message.setText("Reset Code: " + resetCode);
+            emailSender.send(message);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.status(500).body(ex.getMessage());
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("reset-password")
+    public ResponseEntity<Object> resetPassword(@RequestBody AuthResetPasswordRequest request) {
+        try {
+            if (!request.getPassword().equals(request.getConfirmPassword()))
+                throw new Exception("Confirm password is not similar to password");
+            var user = userRepository.findByCodeAndResetCode(request.getCode(), request.getResetCode());
+            if (user == null)
+                throw new Exception("Reset code is invalid");
+
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setResetCode(null);
+            userRepository.save(user);
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return ResponseEntity.status(500).body(ex.getMessage());
+        }
+
+        return ResponseEntity.ok().build();
     }
 }

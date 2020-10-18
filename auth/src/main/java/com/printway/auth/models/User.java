@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class User {
     @Id
     @GeneratedValue
@@ -26,7 +28,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @JsonIgnore
+//    @JsonIgnore
     private String password;
 
     @Column(nullable = false, unique = true, length = 2)
@@ -67,4 +69,7 @@ public class User {
     private Double bonus3;
     private Double bonus4;
     private Double bonus5;
+
+    @Column(name = "reset_code")
+    private String resetCode;
 }

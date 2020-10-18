@@ -44,8 +44,28 @@ public class UserController {
     @PostMapping("")
     public User add(@RequestBody UserStoreRequest request) {
         try {
-            var user = objectMapper.convertValue(request, User.class);
+            var user = new User();
+            user.setCode(request.getCode());
+            user.setFullname(request.getFullname());
+            user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
+            user.setPhone(request.getPhone());
+            user.setEmail(request.getEmail());
+            user.setStatus(1);
+            user.setRoleId(request.getRoleId());
+
+            user.setProfit1(request.getProfit1());
+            user.setProfit2(request.getProfit2());
+            user.setProfit3(request.getProfit3());
+            user.setProfit4(request.getProfit4());
+            user.setProfit5(request.getProfit5());
+
+            user.setBonus1(request.getBonus1());
+            user.setBonus2(request.getBonus2());
+            user.setBonus3(request.getBonus3());
+            user.setBonus4(request.getBonus4());
+            user.setBonus5(request.getBonus5());
+
             return userRepository.save(user);
         } catch (Exception ex) {
             log.error(ex.getMessage());
@@ -58,7 +78,6 @@ public class UserController {
                        @RequestBody UserStoreRequest request) {
         try {
             var user = objectMapper.convertValue(request, User.class);
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setId(id);
             return userRepository.save(user);
         } catch (Exception ex) {

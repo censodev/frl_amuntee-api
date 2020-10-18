@@ -5,12 +5,9 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AuthRegisterRequest {
-    private String username;
+public class AuthResetPasswordRequest {
+    private String code;
     private String password;
     private String confirmPassword;
-    private String code;
-    private String fullname;
-    private String phone;
-    private String email;
+    private String resetCode;
 }

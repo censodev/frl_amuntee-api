@@ -9,3 +9,16 @@ spring:
     url: jdbc:mysql://45.77.250.236:3306/printway_account
     username: app
     password: app@0964603264
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: aptech.campaign@gmail.com
+    password: 12004917
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
