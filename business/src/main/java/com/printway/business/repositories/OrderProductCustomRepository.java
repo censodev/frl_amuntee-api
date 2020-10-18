@@ -1,16 +1,13 @@
 package com.printway.business.repositories;
 
-import com.printway.business.dto.statistic.ProductDesignStatistic;
-import com.printway.business.dto.statistic.ProductTypeStatistic;
-import com.printway.business.dto.statistic.SellerStatistic;
-import com.printway.business.dto.statistic.SupplierStatistic;
+import com.printway.business.dto.statistic.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface OrderProductCustomRepository {
-    List<ProductTypeStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<ProductDesignStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<SellerStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<SupplierStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId);
+    List<ProductTypeStatistic> statForProductType(StatisticQueryParam params);
+    List<ProductDesignStatistic> statForProductDesign(StatisticQueryParam params);
+    List<SellerStatistic> statForSeller(StatisticQueryParam params);
+    List<SupplierStatistic> statForSupplier(StatisticQueryParam params);
 }

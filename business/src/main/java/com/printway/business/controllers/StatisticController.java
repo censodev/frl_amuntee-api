@@ -17,45 +17,50 @@ public class StatisticController {
     @GetMapping("")
     public List<SummaryStatistic> statistic(@RequestParam long from,
                                             @RequestParam long to,
-                                            @RequestParam(defaultValue = "") Integer storeId) {
+                                            @RequestParam(defaultValue = "") Integer storeId,
+                                            @RequestParam(defaultValue = "") String sellerCode) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
-        return statisticService.statForSummary(fromTime, toTime, storeId);
+        return statisticService.statForSummary(new StatisticQueryParam(fromTime, toTime, storeId, sellerCode));
     }
 
     @GetMapping("product-type")
     public List<ProductTypeStatistic> statForProductType(@RequestParam long from,
                                                          @RequestParam long to,
-                                                         @RequestParam(defaultValue = "") Integer storeId) {
+                                                         @RequestParam(defaultValue = "") Integer storeId,
+                                                         @RequestParam(defaultValue = "") String sellerCode) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
-        return statisticService.statForProductType(fromTime, toTime, storeId);
+        return statisticService.statForProductType(new StatisticQueryParam(fromTime, toTime, storeId, sellerCode));
     }
 
     @GetMapping("product-design")
     public List<ProductDesignStatistic> statForProductDesign(@RequestParam long from,
                                                              @RequestParam long to,
-                                                             @RequestParam(defaultValue = "") Integer storeId) {
+                                                             @RequestParam(defaultValue = "") Integer storeId,
+                                                             @RequestParam(defaultValue = "") String sellerCode) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
-        return statisticService.statForProductDesign(fromTime, toTime, storeId);
+        return statisticService.statForProductDesign(new StatisticQueryParam(fromTime, toTime, storeId, sellerCode));
     }
 
     @GetMapping("seller")
     public List<SellerStatistic> statForSeller(@RequestParam long from,
                                                @RequestParam long to,
-                                               @RequestParam(defaultValue = "") Integer storeId) {
+                                               @RequestParam(defaultValue = "") Integer storeId,
+                                               @RequestParam(defaultValue = "") String sellerCode) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
-        return statisticService.statForSeller(fromTime, toTime, storeId);
+        return statisticService.statForSeller(new StatisticQueryParam(fromTime, toTime, storeId, sellerCode));
     }
 
     @GetMapping("supplier")
     public List<SupplierStatistic> statForSupplier(@RequestParam long from,
                                                    @RequestParam long to,
-                                                   @RequestParam(defaultValue = "") Integer storeId) {
+                                                   @RequestParam(defaultValue = "") Integer storeId,
+                                                   @RequestParam(defaultValue = "") String sellerCode) {
         var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
-        return statisticService.statForSupplier(fromTime, toTime, storeId);
+        return statisticService.statForSupplier(new StatisticQueryParam(fromTime, toTime, storeId, sellerCode));
     }
 }

@@ -1,5 +1,6 @@
 package com.printway.business.repositories;
 
+import com.printway.business.dto.statistic.StatisticQueryParam;
 import com.printway.business.dto.statistic.SummaryStatistic;
 import com.printway.business.utils.BusinessUtil;
 import com.printway.common.time.TimeParser;
@@ -17,7 +18,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
     EntityManager em;
 
     @Override
-    public List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<SummaryStatistic> statForSummary(StatisticQueryParam params) {
 //        select
 //        year(ord.created_at) year,
 //                month(ord.created_at) month,
@@ -26,77 +27,59 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 //                sum(bcf.base_cost_fee) base_cost_fee,
 //                count(bcf.order_code) order_count
 //        from orders ord
-//        join (select
+//        join (
+//                select
 //                ord.code order_code,
 //                sum(prd.base_cost * oprd.quantity) base_cost_fee
 //                from orders ord
-//                join orders_products oprd
-//                on ord.code = oprd.order_code
-//                left join products prd
-//                on oprd.product_code = prd.code
+//                join orders_products oprd on ord.code = oprd.order_code
+//                left join products prd on oprd.product_code = prd.code
 //                where ord.revenue > 0
-//                group by ord.code) bcf
-//        on bcf.order_code = ord.code
+//                and oprd.seller_code = :sellerCode
+//        group by ord.code
+//) bcf on bcf.order_code = ord.code
 //        where ord.created_at between date(:from) and date(:to)
 //        and ord.store_id = :storeId
 //        group by year, month, day
 //        order by year asc, month asc, day asc
 //        ;
-        String sql = storeId != null
-                ?   "select\n" +
-                    "    year(ord.created_at) year,\n" +
-                    "    month(ord.created_at) month,\n" +
-                    "    day(ord.created_at) day,\n" +
-                    "    sum(ord.revenue) revenue,\n" +
-                    "    sum(bcf.base_cost_fee) base_cost_fee,\n" +
-                    "    count(bcf.order_code) order_count\n" +
-                    "from orders ord\n" +
-                    "         join (select\n" +
-                    "                   ord.code order_code,\n" +
-                    "                   sum(prd.base_cost * oprd.quantity) base_cost_fee\n" +
-                    "               from orders ord\n" +
-                    "                        join orders_products oprd\n" +
-                    "                             on ord.code = oprd.order_code\n" +
-                    "                        left join products prd\n" +
-                    "                                  on oprd.product_code = prd.code\n" +
-                    "               where ord.revenue > 0\n" +
-                    "               group by ord.code) bcf\n" +
-                    "              on bcf.order_code = ord.code\n" +
-                    "where ord.created_at between date(:from) and date(:to)\n" +
-                    "  and ord.store_id = :storeId\n" +
-                    "group by year, month, day\n" +
-                    "order by year asc, month asc, day asc\n" +
-                    ";"
-
-                :   "select\n" +
-                    "    year(ord.created_at) year,\n" +
-                    "    month(ord.created_at) month,\n" +
-                    "    day(ord.created_at) day,\n" +
-                    "    sum(ord.revenue) revenue,\n" +
-                    "    sum(bcf.base_cost_fee) base_cost_fee,\n" +
-                    "    count(bcf.order_code) order_count\n" +
-                    "from orders ord\n" +
-                    "         join (select\n" +
-                    "                   ord.code order_code,\n" +
-                    "                   sum(prd.base_cost * oprd.quantity) base_cost_fee\n" +
-                    "               from orders ord\n" +
-                    "                        join orders_products oprd\n" +
-                    "                             on ord.code = oprd.order_code\n" +
-                    "                        left join products prd\n" +
-                    "                                  on oprd.product_code = prd.code\n" +
-                    "               where ord.revenue > 0\n" +
-                    "               group by ord.code) bcf\n" +
-                    "              on bcf.order_code = ord.code\n" +
-                    "where ord.created_at between date(:from) and date(:to)\n" +
-                    "group by year, month, day\n" +
-                    "order by year asc, month asc, day asc\n" +
-                    ";";
+        var qrStore = params.getStoreId() != null ? "and ord.store_id = :storeId\n" : "";
+        var qrSeller = !params.getSellerCode().equals("") ? "and oprd.seller_code = :sellerCode\n" : "";
+        String sql =    "select\n" +
+                        "    year(ord.created_at) year,\n" +
+                        "    month(ord.created_at) month,\n" +
+                        "    day(ord.created_at) day,\n" +
+                        "    sum(ord.revenue) revenue,\n" +
+                        "    sum(bcf.base_cost_fee) base_cost_fee,\n" +
+                        "    count(bcf.order_code) order_count\n" +
+                        "from orders ord\n" +
+                        "         join (select\n" +
+                        "                   ord.code order_code,\n" +
+                        "                   sum(prd.base_cost * oprd.quantity) base_cost_fee\n" +
+                        "               from orders ord\n" +
+                        "                        join orders_products oprd\n" +
+                        "                             on ord.code = oprd.order_code\n" +
+                        "                        left join products prd\n" +
+                        "                                  on oprd.product_code = prd.code\n" +
+                        "               where ord.revenue > 0\n" +
+                        qrSeller +
+                        "               group by ord.code) bcf\n" +
+                        "              on bcf.order_code = ord.code\n" +
+                        "where ord.created_at between date(:from) and date(:to)\n" +
+                        qrStore +
+                        "group by year, month, day\n" +
+                        "order by year asc, month asc, day asc\n" +
+                        ";";
         var query = em.createNativeQuery(sql);
-        query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(from));
-        query.setParameter("to", TimeParser.parseLocalDateTimeToISOString(to));
+        query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(params.getFrom()));
+        query.setParameter("to", TimeParser.parseLocalDateTimeToISOString(params.getTo()));
 
-        if (storeId != null) {
-            query.setParameter("storeId", storeId);
+        if (params.getStoreId() != null) {
+            query.setParameter("storeId", params.getStoreId());
+        }
+
+        if (!params.getSellerCode().equals("")) {
+            query.setParameter("sellerCode", params.getSellerCode());
         }
 
         List<Object[]> rsList = query.getResultList();

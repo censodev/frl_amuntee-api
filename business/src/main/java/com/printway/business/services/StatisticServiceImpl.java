@@ -26,19 +26,19 @@ public class StatisticServiceImpl implements StatisticService {
     private AccountService accountService;
 
     @Override
-    public List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to, Integer storeId) {
-        return orderRepository.statForSummary(from, to, storeId);
+    public List<SummaryStatistic> statForSummary(StatisticQueryParam params) {
+        return orderRepository.statForSummary(params);
     }
 
     @Override
-    public List<ProductTypeStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId) {
-        return orderProductRepository.statForProductType(from, to, storeId);
+    public List<ProductTypeStatistic> statForProductType(StatisticQueryParam params) {
+        return orderProductRepository.statForProductType(params);
     }
 
     @Override
-    public List<ProductDesignStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<ProductDesignStatistic> statForProductDesign(StatisticQueryParam params) {
         var accList = accountService.listAccount().getContent();
-        return orderProductRepository.statForProductDesign(from, to, storeId)
+        return orderProductRepository.statForProductDesign(params)
                 .stream()
                 .peek(stat -> {
                     if (stat.getSellerName() == null)
@@ -56,14 +56,14 @@ public class StatisticServiceImpl implements StatisticService {
     }
 
     @Override
-    public List<SupplierStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId) {
-        return orderProductRepository.statForSupplier(from, to, storeId);
+    public List<SupplierStatistic> statForSupplier(StatisticQueryParam params) {
+        return orderProductRepository.statForSupplier(params);
     }
 
     @Override
-    public List<SellerStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId) {
+    public List<SellerStatistic> statForSeller(StatisticQueryParam params) {
         var accList = accountService.listAccount().getContent();
-        return orderProductRepository.statForSeller(from, to, storeId)
+        return orderProductRepository.statForSeller(params)
                 .stream()
                 .peek(stat -> {
                     if (stat.getName() == null)

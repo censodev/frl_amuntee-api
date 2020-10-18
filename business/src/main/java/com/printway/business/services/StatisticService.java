@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StatisticService {
-    List<SummaryStatistic> statForSummary(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<ProductTypeStatistic> statForProductType(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<ProductDesignStatistic> statForProductDesign(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<SupplierStatistic> statForSupplier(LocalDateTime from, LocalDateTime to, Integer storeId);
-    List<SellerStatistic> statForSeller(LocalDateTime from, LocalDateTime to, Integer storeId);
+    List<SummaryStatistic> statForSummary(StatisticQueryParam params);
+    List<ProductTypeStatistic> statForProductType(StatisticQueryParam params);
+    List<ProductDesignStatistic> statForProductDesign(StatisticQueryParam params);
+    List<SupplierStatistic> statForSupplier(StatisticQueryParam params);
+    List<SellerStatistic> statForSeller(StatisticQueryParam params);
 }
