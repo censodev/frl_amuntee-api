@@ -114,6 +114,8 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
 //        on prd.code = ordprd.product_code
 //        where ord.revenue > 0
 //        and ord.financial_status = 'paid'
+//        and ordprd.sku is not null
+//        and ordprd.sku != ''
 //        and ord.created_at between date(:from) and date(:to)
 //        and ord.store_id = :storeId
 //        group by prd.name, ordprd.sku, ordprd.seller_code, prd.picture
@@ -135,6 +137,8 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
                     "    on prd.code = ordprd.product_code\n" +
                     "where ord.revenue > 0\n" +
                     "    and ord.financial_status = 'paid'\n" +
+                    "    and ordprd.sku is not null\n" +
+                    "    and ordprd.sku != ''\n" +
                     "    and ord.created_at between date(:from) and date(:to)\n" +
                     "    and ord.store_id = :storeId\n" +
                     "group by prd.name, ordprd.sku, ordprd.seller_code, prd.picture\n" +
@@ -156,6 +160,8 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
                     "    on prd.code = ordprd.product_code\n" +
                     "where ord.revenue > 0\n" +
                     "    and ord.financial_status = 'paid'\n" +
+                    "    and ordprd.sku is not null\n" +
+                    "    and ordprd.sku != ''\n" +
                     "    and ord.created_at between date(:from) and date(:to)\n" +
                     "group by prd.name, ordprd.sku, ordprd.seller_code, prd.picture\n" +
                     "order by sum(ordprd.price * ordprd.quantity) desc\n" +
