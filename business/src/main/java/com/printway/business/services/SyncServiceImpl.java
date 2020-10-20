@@ -1,8 +1,10 @@
 package com.printway.business.services;
 
 import com.printway.business.dto.shopify.ShopifyOrder;
+import com.printway.business.models.MarketingFee;
 import com.printway.business.models.Order;
 import com.printway.business.models.OrderProduct;
+import com.printway.business.repositories.MarketingFeeRepository;
 import com.printway.business.repositories.OrderProductRepository;
 import com.printway.business.repositories.OrderRepository;
 import com.printway.business.repositories.StoreRepository;
@@ -12,9 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -30,6 +38,12 @@ public class SyncServiceImpl implements SyncService {
 
     @Autowired
     private StoreRepository storeRepository;
+
+    @Autowired
+    private FacebookService facebookService;
+
+    @Autowired
+    private MarketingFeeRepository marketingFeeRepository;
 
     @Override
     public boolean syncShopifyOrders(int limit, boolean testMode) {
@@ -54,6 +68,60 @@ public class SyncServiceImpl implements SyncService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public boolean syncFacebookInsights(boolean testMode) {
+        var accounts = facebookService.fetchAdAccounts();
+        accounts.forEach(acc -> {
+            setTimeoutSync(() -> {
+                var campaigns = facebookService.fetchCampaigns(acc.getId());
+                campaigns.forEach(cam -> {
+                    if (marketingFeeRepository.findByCampaignId(cam.getId()).size() > 0)
+                        return;
+                    setTimeoutSync(() -> {
+                        var ads = facebookService.fetchAds(cam.getId());
+                        ads.forEach(ad -> {
+                            setTimeoutSync(() -> {
+                                var rs = new ArrayList<MarketingFee>();
+                                var insights = facebookService.fetchAdInsights(ad.getId());
+                                insights.forEach(ins -> {
+                                    var mktFee = new MarketingFee();
+                                    mktFee.setCampaignId(cam.getId());
+                                    mktFee.setCampaignName(cam.getName());
+                                    mktFee.setSellerCode(new SkuUtil(cam.getName()).getSellerCode());
+                                    var start = Arrays
+                                            .stream(ins.getDateStart().split("-")).mapToInt(Integer::parseInt).toArray();
+                                    mktFee.setStartTime(LocalDateTime.of(start[0], start[1], start[2], 0, 0, 0));
+                                    var stop = Arrays
+                                            .stream(ins.getDateStop().split("-")).mapToInt(Integer::parseInt).toArray();
+                                    mktFee.setStopTime(LocalDateTime.of(stop[0], stop[1], stop[2], 0, 0, 0));
+                                    mktFee.setSpend(ins.getSpend());
+                                    var dateDiff = ChronoUnit.DAYS.between(mktFee.getStartTime(), mktFee.getStopTime());
+                                    mktFee.setSpendPerDay(mktFee.getSpend() / dateDiff);
+                                    rs.add(mktFee);
+                                    log.info(mktFee.toString());
+                                });
+                                if (!testMode) {
+                                    marketingFeeRepository.saveAll(rs);
+                                }
+                            }, 1000);
+                        });
+                    }, 1000);
+                });
+            }, 1000);
+        });
+        return true;
+    }
+
+    public static void setTimeoutSync(Runnable runnable, int delay) {
+        try {
+            Thread.sleep(delay);
+            runnable.run();
+        }
+        catch (Exception ex){
+            System.err.println(ex.getMessage());
+        }
     }
 
     private void saveOrders(int storeId, List<ShopifyOrder> shopifyOrders, boolean testMode) {
@@ -101,15 +169,11 @@ public class SyncServiceImpl implements SyncService {
                                 product.setTitle(prd.getTitle());
                                 product.setPrice(prd.getPrice());
 
-                                try {
-                                    var skuUtil = new SkuUtil(prd.getSku());
-                                    product.setProductCode(skuUtil.getProductCode());
-                                    product.setDesignCode(skuUtil.getDesignCode());
-                                    product.setSellerCode(skuUtil.getSellerCode());
-                                    product.setSupplierCode(skuUtil.getSupplierCode());
-                                } catch (Exception ex) {
-                                    log.warn("SKU format is invalid");
-                                }
+                                var skuUtil = new SkuUtil(prd.getSku());
+                                product.setProductCode(skuUtil.getProductCode());
+                                product.setDesignCode(skuUtil.getDesignCode());
+                                product.setSellerCode(skuUtil.getSellerCode());
+                                product.setSupplierCode(skuUtil.getSupplierCode());
 
                                 return product;
                             })

@@ -1,6 +1,8 @@
 package com.printway.business.services;
 
 import com.printway.business.dto.statistic.*;
+import com.printway.business.models.MarketingFee;
+import com.printway.business.repositories.MarketingFeeRepository;
 import com.printway.business.repositories.OrderProductRepository;
 import com.printway.business.repositories.OrderRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +25,22 @@ public class StatisticServiceImpl implements StatisticService {
     private OrderProductRepository orderProductRepository;
 
     @Autowired
+    private MarketingFeeRepository marketingFeeRepository;
+
+    @Autowired
     private AccountService accountService;
 
     @Override
     public List<SummaryStatistic> statForSummary(StatisticQueryParam params) {
-        return orderRepository.statForSummary(params);
+        var stats = orderRepository.statForSummary(params);
+        return stats.stream().peek(stat -> {
+            var date = LocalDateTime.of(stat.getYear(), stat.getMonth(), stat.getDay(), 0, 0, 0);
+            var mktFees = params.getSellerCode().equals("")
+                ? marketingFeeRepository.findAllByStartTimeLessThanEqualAndStopTimeGreaterThanEqual(date, date)
+                : marketingFeeRepository.findAllBySellerCodeAndStartTimeLessThanEqualAndStopTimeGreaterThanEqual(params.getSellerCode(), date, date);
+            var mktFee = mktFees.stream().map(MarketingFee::getSpendPerDay).reduce(Double::sum).orElse(null);
+            stat.setMarketingFee(mktFee == null ? null : Math.round(mktFee * 100) / 100.00);
+        }).collect(Collectors.toList());
     }
 
     @Override
