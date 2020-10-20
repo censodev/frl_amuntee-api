@@ -39,7 +39,7 @@ public class StatisticServiceImpl implements StatisticService {
                 ? marketingFeeRepository.findAllByStartTimeLessThanEqualAndStopTimeGreaterThanEqual(date, date)
                 : marketingFeeRepository.findAllBySellerCodeAndStartTimeLessThanEqualAndStopTimeGreaterThanEqual(params.getSellerCode(), date, date);
             var mktFee = mktFees.stream().map(MarketingFee::getSpendPerDay).reduce(Double::sum).orElse(null);
-            stat.setMarketingFee(mktFee == null ? null : Math.round(mktFee * 100) / 100.00);
+            stat.setMarketingFee(mktFee == null ? null : Math.round(mktFee * 103) / 100.00);
         }).collect(Collectors.toList());
     }
 
