@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -89,41 +90,46 @@ public class StatisticServiceImpl implements StatisticService {
                     if (sellerInfo == null)
                         return;
 
-                    var revenueProfit = stat.getRevenue()
+                    // mkt here
+                    var mktFee = 0D;
+
+                    var netProfit = stat.getRevenue()
                             - (stat.getBaseCostFee() != null ? stat.getBaseCostFee() : 0)
                             - (stat.getMarketingFee() != null ? stat.getMarketingFee() : 0)
                             - (stat.getStoreFee() != null ? stat.getStoreFee() : 0);
                     var profitRate = 0D;
                     var bonus = 0D;
 
-                    if (revenueProfit < 400) {
+                    if (netProfit < 400) {
                         bonus = sellerInfo.getBonus1();
-                    } else if (revenueProfit < 1000) {
+                    } else if (netProfit < 1000) {
                         bonus = sellerInfo.getBonus2();
-                    } else if (revenueProfit < 3000) {
+                    } else if (netProfit < 3000) {
                         bonus = sellerInfo.getBonus3();
-                    } else if (revenueProfit < 5000) {
+                    } else if (netProfit < 5000) {
                         bonus = sellerInfo.getBonus4();
                     } else {
                         bonus = sellerInfo.getBonus5();
                     }
 
-                    if (revenueProfit < 650) {
+                    if (netProfit < 650) {
                         profitRate = sellerInfo.getProfit1();
-                    } else if (revenueProfit < 2500) {
+                    } else if (netProfit < 2500) {
                         profitRate = sellerInfo.getProfit2();
-                    } else if (revenueProfit < 5000) {
+                    } else if (netProfit < 5000) {
                         profitRate = sellerInfo.getProfit3();
-                    } else if (revenueProfit < 10000) {
+                    } else if (netProfit < 10000) {
                         profitRate = sellerInfo.getProfit4();
                     } else {
                         profitRate = sellerInfo.getProfit5();
                     }
 
                     stat.setName(sellerInfo.getFullname());
-                    stat.setNetProfit(Math.round(revenueProfit * profitRate *100) / 100.00);
-                    stat.setBonus(Math.round(bonus * stat.getOrderCount() * 100) / 100.00);
-                    stat.setSellerProfit(Math.round((stat.getNetProfit() + stat.getBonus()) * 100) / 100.00);
+                    stat.setMarketingFee(mktFee);
+                    stat.setNetProfit(Math.round(netProfit * 100) / 100.00);
+                    stat.setBonusSale(Math.round(bonus * stat.getOrderCount() * 100) / 100.00);
+                    stat.setBonusProfit(Math.round(stat.getNetProfit() * profitRate * 100) / 100.00);
+                    stat.setSharedProfit(Math.round((stat.getNetProfit() + stat.getBonusProfit() + stat.getBonusSale()) * 100) / 100.00);
                 })
                 .collect(Collectors.toList());
     }

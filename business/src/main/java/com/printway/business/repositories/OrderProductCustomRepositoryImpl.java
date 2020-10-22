@@ -89,7 +89,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     @Override
     public List<ProductDesignStatistic> statForProductDesign(StatisticQueryParam params) {
 //        select
-//        prd.name,
+//        ordprd.title,
 //                ordprd.sku,
 //                ordprd.seller_code,
 //                prd.picture,
@@ -105,14 +105,14 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
 //        and ord.created_at between date(:from) and date(:to)
 //        and ord.store_id = :storeId
 //        and ordprd.seller_code = :sellerCode
-//        group by prd.name, ordprd.sku, ordprd.seller_code, prd.picture
+//        group by ordprd.title, ordprd.sku, ordprd.seller_code, prd.picture
 //        order by sum(ordprd.price * ordprd.quantity) desc
 //        limit 10
 //        ;
         var qrStore = params.getStoreId() != null ? "and ord.store_id = :storeId\n" : "";
         var qrSeller = !params.getSellerCode().equals("") ? "and ordprd.seller_code = :sellerCode\n" : "";
         var sql =   "select\n" +
-                    "    prd.name,\n" +
+                    "    ordprd.title,\n" +
                     "    ordprd.sku,\n" +
                     "    ordprd.seller_code,\n" +
                     "    prd.picture,\n" +
@@ -128,7 +128,7 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
                     "    and ord.created_at between date(:from) and date(:to)\n" +
                     qrStore +
                     qrSeller +
-                    "group by prd.name, ordprd.sku, ordprd.seller_code, prd.picture\n" +
+                    "group by ordprd.title, ordprd.sku, ordprd.seller_code, prd.picture\n" +
                     "order by sum(ordprd.price * ordprd.quantity) desc\n" +
                     "limit 10\n" +
                     ";";

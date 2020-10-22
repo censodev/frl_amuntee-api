@@ -19,6 +19,7 @@ public class SellerStatistic {
     private Double baseCostFee;
     private Double storeFee;
     private Double netProfit;
-    private Double bonus;
-    private Double sellerProfit;
+    private Double bonusProfit;
+    private Double bonusSale;
+    private Double sharedProfit;
 }

@@ -4,13 +4,15 @@ import com.printway.business.services.SyncService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class ShopifySyncTask {
     @Autowired
     private SyncService syncService;
 
-    @Scheduled(cron = "0 0 0,12 ? * * *")
+    @Scheduled(cron = "0 0 0,12 ? * *")
     public void syncOrders() {
         log.info("SYNC SHOPIFY ORDERS: STARTED");
         var rs = syncService.syncShopifyOrders(250, false);
