@@ -81,8 +81,13 @@ public class StatisticServiceImpl implements StatisticService {
                 .stream()
                 .peek(stat -> {
                     // mkt here
-                    var mktFee = 0D;
-                    stat.setMarketingFee(mktFee);
+                    var mktFee = marketingFeeRepository
+                            .findAllBySellerCodeAndStartTimeLessThanEqualAndStopTimeGreaterThanEqual(stat.getName(), params.getFrom(), params.getTo())
+                            .stream()
+                            .map(MarketingFee::getSpend)
+                            .reduce(Double::sum)
+                            .orElse(0D);
+                    stat.setMarketingFee(Math.round(mktFee * 100) / 100.00);
 
                     if (stat.getName() == null)
                         return;

@@ -41,7 +41,7 @@ public class DisputeServiceImpl implements DisputeService {
         try {
             var disputes = csvToDisputes(file.getInputStream());
             log.info(disputes.toString());
-//            disputeRepository.saveAll(disputes);
+            disputeRepository.saveAll(disputes);
             return disputes;
         } catch (IOException e) {
             throw new RuntimeException("fail to store csv data: " + e.getMessage());

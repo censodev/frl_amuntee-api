@@ -41,8 +41,8 @@ class BusinessApplicationTests {
 	@Test
 	void testSyncShopifyOrders() {
 //		var rs = syncService.syncShopifyOrders(250, true);
-		var rs = syncService.syncShopifyOrders(250, true);
-		log.info(String.valueOf(rs));
+//		var rs = syncService.syncShopifyOrders(250, true);
+//		log.info(String.valueOf(rs));
 	}
 
 	@Test
@@ -66,6 +66,6 @@ class BusinessApplicationTests {
 //		log.info(facebookService.fetchCampaigns("act_415270782763378").toString());
 //		log.info(facebookService.fetchAds("23845555633560145").toString());
 //		log.info(facebookService.fetchAdInsights("23845555633580145").toString());
-		syncService.syncFacebookInsights(false);
+//		syncService.syncFacebookInsights(false);
     }
 }
