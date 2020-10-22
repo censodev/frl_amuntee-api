@@ -80,6 +80,10 @@ public class StatisticServiceImpl implements StatisticService {
         return orderProductRepository.statForSeller(params)
                 .stream()
                 .peek(stat -> {
+                    // mkt here
+                    var mktFee = 0D;
+                    stat.setMarketingFee(mktFee);
+
                     if (stat.getName() == null)
                         return;
 
@@ -89,9 +93,6 @@ public class StatisticServiceImpl implements StatisticService {
                     
                     if (sellerInfo == null)
                         return;
-
-                    // mkt here
-                    var mktFee = 0D;
 
                     var netProfit = stat.getRevenue()
                             - (stat.getBaseCostFee() != null ? stat.getBaseCostFee() : 0)
@@ -125,7 +126,6 @@ public class StatisticServiceImpl implements StatisticService {
                     }
 
                     stat.setName(sellerInfo.getFullname());
-                    stat.setMarketingFee(mktFee);
                     stat.setNetProfit(Math.round(netProfit * 100) / 100.00);
                     stat.setBonusSale(Math.round(bonus * stat.getOrderCount() * 100) / 100.00);
                     stat.setBonusProfit(Math.round(stat.getNetProfit() * profitRate * 100) / 100.00);

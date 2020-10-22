@@ -19,47 +19,43 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
     @Override
     public List<ProductTypeStatistic> statForProductType(StatisticQueryParam params) {
 //        select
-//        prdt.name,
+//        prd.name,
+//                ordprd.product_code,
 //                count(ordprd.order_code),
 //                sum(ordprd.quantity),
 //                sum(ordprd.price * ordprd.quantity)
 //        from orders_products ordprd
-//        join orders ord
-//        on ordprd.order_code = ord.code
-//        left join products prd
-//        on prd.code = ordprd.product_code
-//        left join product_types prdt
-//        on prdt.id = prd.type_id
+//        join orders ord on ordprd.order_code = ord.code
+//        left join products prd on prd.code = ordprd.product_code
 //        where ord.revenue > 0
 //        and ord.financial_status = 'paid'
+//        and ordprd.product_code is not null
 //        and ord.created_at between date(:from) and date(:to)
 //        and ord.store_id = :storeId
 //        and ordprd.seller_code = :sellerCode
-//        group by prdt.name
+//        group by prd.name, ordprd.product_code
 //        order by count(ordprd.order_code) desc
 //        ;
         var qrStore = params.getStoreId() != null ? "and ord.store_id = :storeId\n" : "";
         var qrSeller = !params.getSellerCode().equals("") ? "and ordprd.seller_code = :sellerCode\n" : "";
-        var sql =   "        select\n" +
-                    "        prdt.name,\n" +
-                    "                count(ordprd.order_code),\n" +
-                    "                sum(ordprd.quantity),\n" +
-                    "                sum(ordprd.price * ordprd.quantity)\n" +
-                    "        from orders_products ordprd\n" +
-                    "        join orders ord\n" +
-                    "        on ordprd.order_code = ord.code\n" +
-                    "        left join products prd\n" +
-                    "        on prd.code = ordprd.product_code\n" +
-                    "        left join product_types prdt\n" +
-                    "        on prdt.id = prd.type_id\n" +
-                    "        where ord.revenue > 0\n" +
-                    "        and ord.financial_status = 'paid'\n" +
-                    "        and ord.created_at between date(:from) and date(:to)\n" +
+        var sql =   "select\n" +
+                    "    prd.name,\n" +
+                    "    ordprd.product_code,\n" +
+                    "    count(ordprd.order_code),\n" +
+                    "    sum(ordprd.quantity),\n" +
+                    "    sum(ordprd.price * ordprd.quantity)\n" +
+                    "from orders_products ordprd\n" +
+                    "join orders ord on ordprd.order_code = ord.code\n" +
+                    "left join products prd on prd.code = ordprd.product_code\n" +
+                    "where ord.revenue > 0\n" +
+                    "    and ord.financial_status = 'paid'\n" +
+                    "    and ordprd.product_code is not null\n" +
+                    "    and ord.created_at between date(:from) and date(:to)\n" +
                     qrStore +
                     qrSeller +
-                    "        group by prdt.name\n" +
-                    "        order by count(ordprd.order_code) desc\n" +
-                    "        ;";
+                    "group by prd.name, ordprd.product_code\n" +
+                    "order by count(ordprd.order_code) desc\n" +
+                    ";";
 
         var query = em.createNativeQuery(sql);
         query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(params.getFrom()));
@@ -77,10 +73,11 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
         var rs = new ArrayList<ProductTypeStatistic>();
         for (Object[] obj : rsList) {
             var stat = new ProductTypeStatistic();
-            stat.setTitle(obj[0] == null ? null : String.valueOf(obj[0]));
-            stat.setOrderCount(obj[1] == null ? null : Integer.parseInt(String.valueOf(obj[1])));
-            stat.setProductQuantity(obj[2] == null ? null : Integer.parseInt(String.valueOf(obj[2])));
-            stat.setRevenue(obj[3] == null ? null : Math.round((double) obj[3] * 100) / 100.00);
+            stat.setProductName(obj[0] == null ? null : String.valueOf(obj[0]));
+            stat.setProductCode(obj[1] == null ? null : String.valueOf(obj[1]));
+            stat.setOrderCount(obj[2] == null ? null : Integer.parseInt(String.valueOf(obj[2])));
+            stat.setProductQuantity(obj[3] == null ? null : Integer.parseInt(String.valueOf(obj[3])));
+            stat.setRevenue(obj[4] == null ? null : Math.round((double) obj[4] * 100) / 100.00);
             rs.add(stat);
         }
         return rs;
