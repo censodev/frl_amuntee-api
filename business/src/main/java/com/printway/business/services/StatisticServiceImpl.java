@@ -87,7 +87,7 @@ public class StatisticServiceImpl implements StatisticService {
                             .map(MarketingFee::getSpend)
                             .reduce(Double::sum)
                             .orElse(0D);
-                    stat.setMarketingFee(Math.round(mktFee * 100) / 100.00);
+                    stat.setMarketingFee(Math.round(mktFee * 103) / 100.00);
 
                     if (stat.getName() == null)
                         return;
