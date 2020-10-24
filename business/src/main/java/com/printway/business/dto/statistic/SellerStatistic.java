@@ -22,4 +22,7 @@ public class SellerStatistic {
     private Double bonusProfit;
     private Double bonusSale;
     private Double sharedProfit;
+    private Integer year;
+    private Integer month;
+    private Integer day;
 }

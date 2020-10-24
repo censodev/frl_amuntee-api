@@ -159,26 +159,52 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
 
     @Override
     public List<SellerStatistic> statForSeller(StatisticQueryParam params) {
+//        select
+//        ordprd.seller_code,
+//                count(ordprd.order_code) orderCount,
+//                sum(ordprd.quantity) productQuantity,
+//                sum(ordprd.price * ordprd.quantity) revenue,
+//                sum(prd.base_cost * ordprd.quantity) baseCostFee,
+//                year(ord.created_at) year,
+//                month(ord.created_at) month,
+//                day(ord.created_at) day
+//        from orders_products ordprd
+//        join orders ord
+//        on ordprd.order_code = ord.code
+//        left join products prd
+//        on prd.code = ordprd.product_code
+//        where ord.revenue > 0
+//        and ordprd.seller_code is not null
+//        and ord.financial_status = 'paid'
+//        and ord.created_at between date(:from) and date(:to)
+//        and ord.store_id = :storeId
+//        and ordprd.seller_code = :sellerCode
+//        group by ordprd.seller_code, year, month, day
+//        ;
         var qrStore = params.getStoreId() != null ? "and ord.store_id = :storeId\n" : "";
         var qrSeller = !params.getSellerCode().equals("") ? "and ordprd.seller_code = :sellerCode\n" : "";
-        var sql =   "select\n" +
-                    "    ordprd.seller_code,\n" +
-                    "    count(ordprd.order_code) orderCount,\n" +
-                    "    sum(ordprd.quantity) productQuantity,\n" +
-                    "    sum(ordprd.price * ordprd.quantity) revenue,\n" +
-                    "    sum(prd.base_cost * ordprd.quantity) baseCostFee\n" +
-                    "from orders_products ordprd\n" +
-                    "join orders ord\n" +
-                    "    on ordprd.order_code = ord.code\n" +
-                    "left join products prd\n" +
-                    "    on prd.code = ordprd.product_code\n" +
-                    "where ord.revenue > 0\n" +
-                    "    and ord.financial_status = 'paid'\n" +
-                    "    and ord.created_at between date(:from) and date(:to)\n" +
+        var sql =   "        select\n" +
+                    "        ordprd.seller_code,\n" +
+                    "                count(ordprd.order_code) orderCount,\n" +
+                    "                sum(ordprd.quantity) productQuantity,\n" +
+                    "                sum(ordprd.price * ordprd.quantity) revenue,\n" +
+                    "                sum(prd.base_cost * ordprd.quantity) baseCostFee,\n" +
+                    "                year(ord.created_at) year,\n" +
+                    "                month(ord.created_at) month,\n" +
+                    "                day(ord.created_at) day\n" +
+                    "        from orders_products ordprd\n" +
+                    "        join orders ord\n" +
+                    "        on ordprd.order_code = ord.code\n" +
+                    "        left join products prd\n" +
+                    "        on prd.code = ordprd.product_code\n" +
+                    "        where ord.revenue > 0\n" +
+                    "        and ordprd.seller_code is not null\n" +
+                    "        and ord.financial_status = 'paid'\n" +
+                    "        and ord.created_at between date(:from) and date(:to)\n" +
                     qrStore +
                     qrSeller +
-                    "group by ordprd.seller_code\n" +
-                    ";";
+                    "        group by ordprd.seller_code, year, month, day\n" +
+                    "        ;";
 
         var query = em.createNativeQuery(sql);
         query.setParameter("from", TimeParser.parseLocalDateTimeToISOString(params.getFrom()));
@@ -202,6 +228,9 @@ public class OrderProductCustomRepositoryImpl implements OrderProductCustomRepos
             stat.setRevenue(obj[3] == null ? null : Math.round((double) obj[3] * 100) / 100.00);
             stat.setBaseCostFee(obj[4] == null ? null : Math.round((double) obj[4] * 100) / 100.00);
             stat.setStoreFee(BusinessUtil.calcStoreFee((double) obj[3]));
+            stat.setYear(obj[5] == null ? null : Integer.parseInt(String.valueOf(obj[5])));
+            stat.setMonth(obj[6] == null ? null : Integer.parseInt(String.valueOf(obj[6])));
+            stat.setDay(obj[7] == null ? null : Integer.parseInt(String.valueOf(obj[7])));
             rs.add(stat);
         }
         return rs;

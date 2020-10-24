@@ -2,6 +2,7 @@ package com.printway.business.services;
 
 import com.printway.business.dto.statistic.*;
 import com.printway.business.models.MarketingFee;
+import com.printway.business.repositories.DisputeRepository;
 import com.printway.business.repositories.MarketingFeeRepository;
 import com.printway.business.repositories.OrderProductRepository;
 import com.printway.business.repositories.OrderRepository;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +27,9 @@ public class StatisticServiceImpl implements StatisticService {
 
     @Autowired
     private MarketingFeeRepository marketingFeeRepository;
+
+    @Autowired
+    private DisputeRepository disputeRepository;
 
     @Autowired
     private AccountService accountService;
@@ -81,13 +84,11 @@ public class StatisticServiceImpl implements StatisticService {
                 .stream()
                 .peek(stat -> {
                     // mkt here
+                    var date = LocalDateTime.of(stat.getYear(), stat.getMonth(), stat.getDay(), 0, 0, 0);
                     var mktFee = marketingFeeRepository
-                            .findAllBySellerCodeAndStartTimeLessThanEqualAndStopTimeGreaterThanEqual(stat.getName(), params.getFrom(), params.getTo())
-                            .stream()
-                            .map(MarketingFee::getSpend)
-                            .reduce(Double::sum)
-                            .orElse(0D);
-                    stat.setMarketingFee(Math.round(mktFee * 103) / 100.00);
+                            .findAllBySellerCodeAndStartTimeLessThanEqualAndStopTimeGreaterThanEqual(stat.getName(), date, date)
+                            .stream().map(MarketingFee::getSpendPerDay).reduce(Double::sum).orElse(null);;
+                    stat.setMarketingFee(mktFee == null ? null : Math.round(mktFee * 103) / 100.00);
 
                     if (stat.getName() == null)
                         return;
@@ -137,6 +138,11 @@ public class StatisticServiceImpl implements StatisticService {
                     stat.setSharedProfit(Math.round((stat.getNetProfit() + stat.getBonusProfit() + stat.getBonusSale()) * 100) / 100.00);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DisputeStatistic> statForDispute(StatisticQueryParam params) {
+        return disputeRepository.statForDispute(params);
     }
 
 }

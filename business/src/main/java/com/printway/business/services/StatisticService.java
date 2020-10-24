@@ -11,4 +11,5 @@ public interface StatisticService {
     List<ProductDesignStatistic> statForProductDesign(StatisticQueryParam params);
     List<SupplierStatistic> statForSupplier(StatisticQueryParam params);
     List<SellerStatistic> statForSeller(StatisticQueryParam params);
+    List<DisputeStatistic> statForDispute(StatisticQueryParam params);
 }

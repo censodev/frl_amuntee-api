@@ -63,4 +63,14 @@ public class StatisticController {
         var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
         return statisticService.statForSupplier(new StatisticQueryParam(fromTime, toTime, storeId, sellerCode));
     }
+
+    @GetMapping("dispute")
+    public List<DisputeStatistic> statForDispute(@RequestParam long from,
+                                                   @RequestParam long to,
+                                                   @RequestParam(defaultValue = "") Integer storeId,
+                                                   @RequestParam(defaultValue = "") String sellerCode) {
+        var fromTime = TimeParser.parseEpochMillisToLocalDateTime(from);
+        var toTime = TimeParser.parseEpochMillisToLocalDateTime(to);
+        return statisticService.statForDispute(new StatisticQueryParam(fromTime, toTime, storeId, sellerCode));
+    }
 }
