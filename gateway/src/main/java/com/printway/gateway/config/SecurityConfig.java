@@ -18,16 +18,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .cors()
+                    .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                        // allow all who are accessing "auth" service
                         .antMatchers(jwtProvider.getUri()).permitAll()
-                        // must be an admin if trying to access admin area (authentication is also required here)
-//                        .antMatchers("/api/user/**").hasRole("ADMIN")
-                        // Any other request must be authenticated
-//                        .anyRequest().authenticated();
-                        .anyRequest().permitAll()
-        ;
+                        .antMatchers(
+                                "/api/user/**", "/api/store/**", "/api/product/**", "/api/supplier/**", "/api/dispute/**")
+                                .hasRole("ADMIN")
+                        .anyRequest().authenticated();
     }
 
     @Bean
