@@ -71,57 +71,38 @@ public class SyncServiceImpl implements SyncService {
     }
 
     @Override
-    public boolean syncFacebookInsights(boolean testMode) {
-        var accounts = facebookService.fetchAdAccounts();
-        accounts.forEach(acc -> {
-            setTimeoutSync(() -> {
-                var campaigns = facebookService.fetchCampaigns(acc.getId());
-                campaigns.forEach(cam -> {
-                    if (marketingFeeRepository.findByCampaignId(cam.getId()).size() > 0)
-                        return;
-                    setTimeoutSync(() -> {
-                        var ads = facebookService.fetchAds(cam.getId());
-                        ads.forEach(ad -> {
-                            setTimeoutSync(() -> {
-                                var rs = new ArrayList<MarketingFee>();
-                                var insights = facebookService.fetchAdInsights(ad.getId());
-                                insights.forEach(ins -> {
-                                    var mktFee = new MarketingFee();
-                                    mktFee.setCampaignId(cam.getId());
-                                    mktFee.setCampaignName(cam.getName());
-                                    mktFee.setSellerCode(new SkuUtil(cam.getName()).getSellerCode());
-                                    var start = Arrays
-                                            .stream(ins.getDateStart().split("-")).mapToInt(Integer::parseInt).toArray();
-                                    mktFee.setStartTime(LocalDateTime.of(start[0], start[1], start[2], 0, 0, 0));
-                                    var stop = Arrays
-                                            .stream(ins.getDateStop().split("-")).mapToInt(Integer::parseInt).toArray();
-                                    mktFee.setStopTime(LocalDateTime.of(stop[0], stop[1], stop[2], 0, 0, 0));
-                                    mktFee.setSpend(ins.getSpend());
-                                    var dateDiff = ChronoUnit.DAYS.between(mktFee.getStartTime(), mktFee.getStopTime());
-                                    mktFee.setSpendPerDay(mktFee.getSpend() / dateDiff);
-                                    rs.add(mktFee);
-                                    log.info(mktFee.toString());
-                                });
-                                if (!testMode) {
-                                    marketingFeeRepository.saveAll(rs);
-                                }
-                            }, 1000);
-                        });
-                    }, 1000);
-                });
-            }, 1000);
+    public boolean syncFacebookInsights(boolean testMode) throws Exception {
+        facebookService.fetchAdAccounts().getData().forEach(acc -> {
+            if (acc.getCampaigns() == null)
+                return;
+            acc.getCampaigns().getData().forEach(camp -> {
+                if (marketingFeeRepository.findByCampaignId(camp.getId()).size() > 0)
+                    return;
+                if (camp.getInsights() == null)
+                    return;
+                var mktFees = camp.getInsights().getData().stream().map(ins -> {
+                    var mktFee = new MarketingFee();
+                    mktFee.setCampaignId(camp.getId());
+                    mktFee.setCampaignName(camp.getName());
+                    mktFee.setSellerCode(new SkuUtil(camp.getName()).getSellerCode());
+                    var start = Arrays
+                            .stream(ins.getDateStart().split("-")).mapToInt(Integer::parseInt).toArray();
+                    mktFee.setStartTime(LocalDateTime.of(start[0], start[1], start[2], 0, 0, 0));
+                    var stop = Arrays
+                            .stream(ins.getDateStop().split("-")).mapToInt(Integer::parseInt).toArray();
+                    mktFee.setStopTime(LocalDateTime.of(stop[0], stop[1], stop[2], 0, 0, 0));
+                    mktFee.setSpend(ins.getSpend());
+                    var dateDiff = ChronoUnit.DAYS.between(mktFee.getStartTime(), mktFee.getStopTime());
+                    mktFee.setSpendPerDay(mktFee.getSpend() / dateDiff);
+                    return mktFee;
+                }).collect(Collectors.toList());
+                log.info(mktFees.toString());
+                if (!testMode) {
+                    marketingFeeRepository.saveAll(mktFees);
+                }
+            });
         });
         return true;
-    }
-
-    public static void setTimeoutSync(Runnable runnable, int delay) {
-        try {
-            Thread.sleep(delay);
-            runnable.run();
-        }
-        catch (Exception ex){
-            System.err.println(ex.getMessage());
-        }
     }
 
     private void saveOrders(int storeId, List<ShopifyOrder> shopifyOrders, boolean testMode) {

@@ -6,9 +6,9 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    url: jdbc:mysql://128.199.118.150:3306/printway_account
+    url: jdbc:mysql://127.0.0.1:3306/printway_account
     username: root
-    password: printway@12345678
+    password: root@123
 
 
   mail:

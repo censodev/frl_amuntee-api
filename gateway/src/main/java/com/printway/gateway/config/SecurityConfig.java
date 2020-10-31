@@ -24,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                         .antMatchers(jwtProvider.getUri()).permitAll()
                         .antMatchers(
-                                "/api/user/**", "/api/store/**", "/api/product/**", "/api/supplier/**", "/api/dispute/**")
+                                "/api/user/**", "/api/store/**", "/api/product/**", "/api/supplier/**", "/api/dispute/**", "/api/config/**")
                                 .hasRole("ADMIN")
                         .anyRequest().authenticated();
     }

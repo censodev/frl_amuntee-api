@@ -15,7 +15,12 @@ public class FacebookSyncTask {
     @Scheduled(cron = "0 0 1 ? * *")
     public void syncMarketingInsights() {
         log.info("SYNC FACEBOOK MARKETING INSIGHTS: STARTED");
-        var rs = syncService.syncFacebookInsights(false);
+        boolean rs = false;
+        try {
+            rs = syncService.syncFacebookInsights(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         log.info("SYNC FACEBOOK MARKETING INSIGHTS: DONE | status: " + rs);
     }
 }

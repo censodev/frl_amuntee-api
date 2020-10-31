@@ -66,6 +66,7 @@ class BusinessApplicationTests {
 //		log.info(facebookService.fetchCampaigns("act_415270782763378").toString());
 //		log.info(facebookService.fetchAds("23845555633560145").toString());
 //		log.info(facebookService.fetchAdInsights("23845555633580145").toString());
-//		syncService.syncFacebookInsights(false);
+//		log.info(facebookService.fetchAdAccounts().toString());
+//		syncService.syncFacebookInsights(true);
     }
 }

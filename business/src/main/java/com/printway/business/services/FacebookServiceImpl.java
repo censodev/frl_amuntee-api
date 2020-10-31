@@ -1,57 +1,35 @@
 package com.printway.business.services;
 
 import com.printway.business.dto.facebook.*;
+import com.printway.business.repositories.ConfigRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 @Service
 @Slf4j
 public class FacebookServiceImpl implements FacebookService {
-    @Value("${spring.social.facebook.accessToken}")
-    private String accessToken;
+    @Autowired
+    private ConfigRepository configRepository;
 
-    private String api = "https://graph.facebook.com/v8.0";
-
-    private RestTemplate getFacebookTemplate() {
+    private RestTemplate getFacebookTemplate(String token) {
         return new RestTemplateBuilder()
-                .defaultHeader("Authorization", "Bearer " + accessToken)
+                .defaultHeader("Authorization", "Bearer " + token)
                 .build();
     }
 
     @Override
-    public List<AdAccount> fetchAdAccounts() {
-        var url = api + "/me?fields=adaccounts";
-        var data = getFacebookTemplate().getForObject(url, AdAccountSet.class);
+    public AdAccounts fetchAdAccounts() throws Exception {
+        var fields = "adaccounts.limit(1000){id,name,account_status,age,amount_spent,spend_cap,balance,currency,is_prepay_account,business,funding_source_details,campaigns.limit(1000){name,id,insights{date_start,date_stop,spend}},adsets.limit(1000){id}}";
+        var url = "https://graph.facebook.com/v8.0/me?fields={fields}";
+        var config = configRepository.findFirstByStatus(1);
+        if (config == null)
+            throw new Exception("No config was set");
+        var data = getFacebookTemplate(config.getFacebookToken())
+                .getForObject(url, Me.class, fields);
         assert data != null;
-        return data.getAdaccounts().getData();
-    }
-
-    @Override
-    public List<Campaign> fetchCampaigns(String accountId) {
-        var url = api + "/" + accountId + "/campaigns?fields=name,start_time";
-        var data = getFacebookTemplate().getForObject(url, CampaignSet.class);
-        assert data != null;
-        return data.getData();
-    }
-
-    @Override
-    public List<Ad> fetchAds(String campaignId) {
-        var url = api + "/" + campaignId + "/adsets";
-        var data = getFacebookTemplate().getForObject(url, AdSet.class);
-        assert data != null;
-        return data.getData();
-    }
-
-    @Override
-    public List<AdInsights> fetchAdInsights(String adId) {
-        var url = api + "/" + adId + "/insights";
-        var data = getFacebookTemplate().getForObject(url, AdInsightsSet.class);
-        assert data != null;
-        return data.getData();
+        return data.getAdAccounts();
     }
 }

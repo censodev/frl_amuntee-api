@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class Campaign {
+public class FundingSourceDetails {
     private String id;
-    private String name;
 
-    @JsonProperty("start_time")
-    private String startTime;
+    @JsonProperty("display_string")
+    private String displayString;
+
+    private Integer type;
 }

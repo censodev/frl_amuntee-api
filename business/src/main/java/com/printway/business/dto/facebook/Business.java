@@ -2,9 +2,8 @@ package com.printway.business.dto.facebook;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class AdSet {
-    List<Ad> data;
+public class Business {
+    private String id;
+    private String name;
 }
