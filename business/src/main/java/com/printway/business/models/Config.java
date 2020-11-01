@@ -19,6 +19,9 @@ public class Config {
     @GeneratedValue
     private int id;
 
+    @Column(name = "facebook_token_title")
+    private String facebookTokenTitle;
+
     @Column(name = "facebook_token")
     private String facebookToken;
 

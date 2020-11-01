@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.printway.business.dto.facebook.AdAccounts;
 import com.printway.business.repositories.ConfigRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,11 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class TelegramBotServiceImpl implements TelegramBotService {
+    @Value("${telegram.bot.token}")
+    private String botToken;
+
     @Value("${telegram.bot.reply-timeout}")
     private int botReplyTimeout;
-
-    @Autowired
-    private ConfigRepository configRepository;
 
     @Autowired
     private FacebookService facebookService;
@@ -37,12 +38,7 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
     @PostConstruct
     protected void postConstruct() {
-        var config = configRepository.findFirstByStatus(1);
-        if (config == null || config.getTelegramBotToken() == null) {
-            log.error("Telegram bot config was not set");
-            return;
-        }
-        bot = new TelegramBot(config.getTelegramBotToken());
+        bot = new TelegramBot(botToken);
         new Timer().scheduleAtFixedRate(new TimerTask(){
             @Override
             public void run(){
@@ -102,8 +98,10 @@ public class TelegramBotServiceImpl implements TelegramBotService {
     }
     
     private SendMessage adaccountsMessage(Object chatId) throws Exception {
-        var text = "<pre>" + facebookService.fetchAdAccounts().toTable() + "</pre>";
-//        var text = facebookService.fetchAdAccounts().toTableHTML();
+        var text = facebookService.fetchAdAccounts()
+                .stream()
+                .map(AdAccounts::toTable)
+                .reduce("", (acc, cur) -> acc + "\n" + "<pre>" + cur + "</pre>");
         return new SendMessage(chatId, text)
                 .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
@@ -111,9 +109,11 @@ public class TelegramBotServiceImpl implements TelegramBotService {
     }
 
     private SendMessage adaccountsDisabledMessage(Object chatId) throws Exception {
-        var acc = facebookService.fetchAdAccounts();
-        acc.setData(acc.getData().stream().filter(i -> i.getAccountStatus() != 1).collect(Collectors.toList()));
-        var text = "<pre>" + acc.toTable() + "</pre>";
+        var text = facebookService.fetchAdAccounts()
+                .stream()
+                .peek(acc -> acc.setData(acc.getData().stream().filter(i -> i.getAccountStatus() != 1).collect(Collectors.toList())))
+                .map(AdAccounts::toTable)
+                .reduce("", (acc, cur) -> acc + "\n" + "<pre>" + cur + "</pre>");
         return new SendMessage(chatId, text)
                 .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
@@ -121,9 +121,11 @@ public class TelegramBotServiceImpl implements TelegramBotService {
     }
 
     private SendMessage adaccountsThresholdMessage(Object chatId) throws Exception {
-        var acc = facebookService.fetchAdAccounts();
-        acc.setData(acc.getData().stream().filter(i -> i.getAmountSpent().equals(i.getSpendCap())).collect(Collectors.toList()));
-        var text = "<pre>" + acc.toTable() + "</pre>";
+        var text = facebookService.fetchAdAccounts()
+                .stream()
+                .peek(acc -> acc.setData(acc.getData().stream().filter(i -> i.getAmountSpent().equals(i.getSpendCap())).collect(Collectors.toList())))
+                .map(AdAccounts::toTable)
+                .reduce("", (acc, cur) -> acc + "\n" + "<pre>" + cur + "</pre>");
         return new SendMessage(chatId, text)
                 .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
