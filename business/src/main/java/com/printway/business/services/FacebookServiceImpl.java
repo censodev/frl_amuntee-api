@@ -25,8 +25,8 @@ public class FacebookServiceImpl implements FacebookService {
         var fields = "adaccounts.limit(1000){id,name,account_status,age,amount_spent,spend_cap,balance,currency,is_prepay_account,business,funding_source_details,campaigns.limit(1000){name,id,insights{date_start,date_stop,spend}},adsets.limit(1000){id}}";
         var url = "https://graph.facebook.com/v8.0/me?fields={fields}";
         var config = configRepository.findFirstByStatus(1);
-        if (config == null)
-            throw new Exception("No config was set");
+        if (config == null || config.getFacebookToken() == null)
+            throw new Exception("Facebook token was not set");
         var data = getFacebookTemplate(config.getFacebookToken())
                 .getForObject(url, Me.class, fields);
         assert data != null;

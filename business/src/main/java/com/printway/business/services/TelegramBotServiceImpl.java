@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class TelegramServiceImpl implements TelegramService {
+public class TelegramBotServiceImpl implements TelegramBotService {
     @Value("${telegram.bot.reply-timeout}")
     private int botReplyTimeout;
 
@@ -36,10 +36,12 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @PostConstruct
-    protected void postConstruct() throws Exception {
+    protected void postConstruct() {
         var config = configRepository.findFirstByStatus(1);
-        if (config == null)
-            throw new Exception("Config is not set");
+        if (config == null || config.getTelegramBotToken() == null) {
+            log.error("Telegram bot config was not set");
+            return;
+        }
         bot = new TelegramBot(config.getTelegramBotToken());
         new Timer().scheduleAtFixedRate(new TimerTask(){
             @Override
@@ -50,13 +52,16 @@ public class TelegramServiceImpl implements TelegramService {
                         .filter(update -> {
                             var date = update.message().date();
                             var now = new Date().toInstant().getEpochSecond();
-                            return now - date <= botReplyTimeout;
+                            return now - date <= botReplyTimeout + 1;
                         }).forEach(update -> {
                             var chatId = update.message().chat().id();
+                            var cmd = update.message().text();
+                            log.info("Bot received message from " + chatId + " with command: " + cmd);
                             bot.execute(waitingMessage(chatId));
                             try {
-                                var message = getMessage(chatId, update.message().text());
+                                var message = getMessage(chatId, cmd);
                                 bot.execute(message);
+                                log.info("Bot replied to " + chatId + " with command: " + cmd);
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 bot.execute(errMessage(chatId, e.getMessage()));
@@ -97,9 +102,10 @@ public class TelegramServiceImpl implements TelegramService {
     }
     
     private SendMessage adaccountsMessage(Object chatId) throws Exception {
-        var text = facebookService.fetchAdAccounts().toTable();
+        var text = "<pre>" + facebookService.fetchAdAccounts().toTable() + "</pre>";
+//        var text = facebookService.fetchAdAccounts().toTableHTML();
         return new SendMessage(chatId, text)
-                .parseMode(ParseMode.Markdown)
+                .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(false);
     }
@@ -107,9 +113,9 @@ public class TelegramServiceImpl implements TelegramService {
     private SendMessage adaccountsDisabledMessage(Object chatId) throws Exception {
         var acc = facebookService.fetchAdAccounts();
         acc.setData(acc.getData().stream().filter(i -> i.getAccountStatus() != 1).collect(Collectors.toList()));
-        var text = acc.toTable();
+        var text = "<pre>" + acc.toTable() + "</pre>";
         return new SendMessage(chatId, text)
-                .parseMode(ParseMode.Markdown)
+                .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(false);
     }
@@ -117,9 +123,9 @@ public class TelegramServiceImpl implements TelegramService {
     private SendMessage adaccountsThresholdMessage(Object chatId) throws Exception {
         var acc = facebookService.fetchAdAccounts();
         acc.setData(acc.getData().stream().filter(i -> i.getAmountSpent().equals(i.getSpendCap())).collect(Collectors.toList()));
-        var text = acc.toTable();
+        var text = "<pre>" + acc.toTable() + "</pre>";
         return new SendMessage(chatId, text)
-                .parseMode(ParseMode.Markdown)
+                .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(false);
     }
