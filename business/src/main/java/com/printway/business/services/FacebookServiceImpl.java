@@ -26,7 +26,7 @@ public class FacebookServiceImpl implements FacebookService {
 
     @Override
     public List<AdAccounts> fetchAdAccounts() throws Exception {
-        var fields = "adaccounts.limit(1000){id,name,account_status,age,amount_spent,spend_cap,balance,currency,is_prepay_account,business,funding_source_details,campaigns.limit(1000){name,id,insights{date_start,date_stop,spend}},adsets.limit(1000){id}}";
+        var fields = "adaccounts.limit(1000){id,name,account_status,age,amount_spent,spend_cap,balance,currency,is_prepay_account,business,funding_source_details,campaigns.limit(1000){name,id,status,insights{date_start,date_stop,spend}},adsets.limit(1000){id}}";
         var url = "https://graph.facebook.com/v8.0/me?fields={fields}";
         var tokens = configRepository.findAllByStatus(1)
                 .stream()

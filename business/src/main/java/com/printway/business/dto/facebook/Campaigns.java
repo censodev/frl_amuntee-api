@@ -12,6 +12,7 @@ public class Campaigns {
     public static class Campaign {
         private String id;
         private String name;
+        private String status;
         private Insights insights;
     }
 }
