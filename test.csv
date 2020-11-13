@@ -1,0 +1,3 @@
+Order ID,Transaction,Amount,Dispute Fee,Paygate Name,Total,Seller ID,Reason,Date
+123123123,123123213,12.2,10.5,paypal,1100,ta,reason,2020-10-10T00:00:00-07:00
+123123124,123123214,12.5,5,manual,1100,ta,reason,2020-10-11T00:00:00-07:00
