@@ -19,10 +19,13 @@ public class Config {
     @GeneratedValue
     private int id;
 
-    @Column(name = "facebook_token", nullable = false)
+    @Column(name = "facebook_token_title")
+    private String facebookTokenTitle;
+
+    @Column(name = "facebook_token")
     private String facebookToken;
 
-    @Column(name = "telegram_bot_token", nullable = false)
+    @Column(name = "telegram_bot_token")
     private String telegramBotToken;
 
     private Integer status;

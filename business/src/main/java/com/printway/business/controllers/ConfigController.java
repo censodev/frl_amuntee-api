@@ -29,7 +29,7 @@ public class ConfigController {
         var sort = order.equals("asc")
                 ? Sort.by(orderBy).ascending()
                 : Sort.by(orderBy).descending();
-        return configRepository.findAll(PageRequest.of(page, limit, sort));
+        return configRepository.findAllByStatus(1, PageRequest.of(page, limit, sort));
     }
 
     @PostMapping("")

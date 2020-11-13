@@ -72,34 +72,36 @@ public class SyncServiceImpl implements SyncService {
 
     @Override
     public boolean syncFacebookInsights(boolean testMode) throws Exception {
-        facebookService.fetchAdAccounts().getData().forEach(acc -> {
-            if (acc.getCampaigns() == null)
-                return;
-            acc.getCampaigns().getData().forEach(camp -> {
-                if (marketingFeeRepository.findByCampaignId(camp.getId()).size() > 0)
+        facebookService.fetchAdAccounts().forEach(adAccounts -> {
+            adAccounts.getData().forEach(acc -> {
+                if (acc.getCampaigns() == null)
                     return;
-                if (camp.getInsights() == null)
-                    return;
-                var mktFees = camp.getInsights().getData().stream().map(ins -> {
-                    var mktFee = new MarketingFee();
-                    mktFee.setCampaignId(camp.getId());
-                    mktFee.setCampaignName(camp.getName());
-                    mktFee.setSellerCode(new SkuUtil(camp.getName()).getSellerCode());
-                    var start = Arrays
-                            .stream(ins.getDateStart().split("-")).mapToInt(Integer::parseInt).toArray();
-                    mktFee.setStartTime(LocalDateTime.of(start[0], start[1], start[2], 0, 0, 0));
-                    var stop = Arrays
-                            .stream(ins.getDateStop().split("-")).mapToInt(Integer::parseInt).toArray();
-                    mktFee.setStopTime(LocalDateTime.of(stop[0], stop[1], stop[2], 0, 0, 0));
-                    mktFee.setSpend(ins.getSpend());
-                    var dateDiff = ChronoUnit.DAYS.between(mktFee.getStartTime(), mktFee.getStopTime());
-                    mktFee.setSpendPerDay(mktFee.getSpend() / dateDiff);
-                    return mktFee;
-                }).collect(Collectors.toList());
-                log.info(mktFees.toString());
-                if (!testMode) {
-                    marketingFeeRepository.saveAll(mktFees);
-                }
+                acc.getCampaigns().getData().forEach(camp -> {
+                    if (marketingFeeRepository.findByCampaignId(camp.getId()).size() > 0)
+                        return;
+                    if (camp.getInsights() == null)
+                        return;
+                    var mktFees = camp.getInsights().getData().stream().map(ins -> {
+                        var mktFee = new MarketingFee();
+                        mktFee.setCampaignId(camp.getId());
+                        mktFee.setCampaignName(camp.getName());
+                        mktFee.setSellerCode(new SkuUtil(camp.getName()).getSellerCode());
+                        var start = Arrays
+                                .stream(ins.getDateStart().split("-")).mapToInt(Integer::parseInt).toArray();
+                        mktFee.setStartTime(LocalDateTime.of(start[0], start[1], start[2], 0, 0, 0));
+                        var stop = Arrays
+                                .stream(ins.getDateStop().split("-")).mapToInt(Integer::parseInt).toArray();
+                        mktFee.setStopTime(LocalDateTime.of(stop[0], stop[1], stop[2], 0, 0, 0));
+                        mktFee.setSpend(ins.getSpend());
+                        var dateDiff = ChronoUnit.DAYS.between(mktFee.getStartTime(), mktFee.getStopTime());
+                        mktFee.setSpendPerDay(mktFee.getSpend() / dateDiff);
+                        return mktFee;
+                    }).collect(Collectors.toList());
+                    log.info(mktFees.toString());
+                    if (!testMode) {
+                        marketingFeeRepository.saveAll(mktFees);
+                    }
+                });
             });
         });
         return true;

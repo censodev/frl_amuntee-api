@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.printway.business.dto.facebook.AdAccounts;
 import com.printway.business.repositories.ConfigRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class TelegramServiceImpl implements TelegramService {
+public class TelegramBotServiceImpl implements TelegramBotService {
+    @Value("${telegram.bot.token}")
+    private String botToken;
+
     @Value("${telegram.bot.reply-timeout}")
     private int botReplyTimeout;
-
-    @Autowired
-    private ConfigRepository configRepository;
 
     @Autowired
     private FacebookService facebookService;
@@ -36,11 +37,8 @@ public class TelegramServiceImpl implements TelegramService {
     }
 
     @PostConstruct
-    protected void postConstruct() throws Exception {
-        var config = configRepository.findFirstByStatus(1);
-        if (config == null)
-            throw new Exception("Config is not set");
-        bot = new TelegramBot(config.getTelegramBotToken());
+    protected void postConstruct() {
+        bot = new TelegramBot(botToken);
         new Timer().scheduleAtFixedRate(new TimerTask(){
             @Override
             public void run(){
@@ -50,13 +48,16 @@ public class TelegramServiceImpl implements TelegramService {
                         .filter(update -> {
                             var date = update.message().date();
                             var now = new Date().toInstant().getEpochSecond();
-                            return now - date <= botReplyTimeout;
+                            return now - date <= botReplyTimeout + 1;
                         }).forEach(update -> {
                             var chatId = update.message().chat().id();
+                            var cmd = update.message().text();
+                            log.info("Bot received message from " + chatId + " with command: " + cmd);
                             bot.execute(waitingMessage(chatId));
                             try {
-                                var message = getMessage(chatId, update.message().text());
+                                var message = getMessage(chatId, cmd);
                                 bot.execute(message);
+                                log.info("Bot replied to " + chatId + " with command: " + cmd);
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 bot.execute(errMessage(chatId, e.getMessage()));
@@ -97,29 +98,36 @@ public class TelegramServiceImpl implements TelegramService {
     }
     
     private SendMessage adaccountsMessage(Object chatId) throws Exception {
-        var text = facebookService.fetchAdAccounts().toTable();
+        var text = facebookService.fetchAdAccounts()
+                .stream()
+                .map(AdAccounts::toTable)
+                .reduce("", (acc, cur) -> acc + "\n" + "<pre>" + cur + "</pre>");
         return new SendMessage(chatId, text)
-                .parseMode(ParseMode.Markdown)
+                .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(false);
     }
 
     private SendMessage adaccountsDisabledMessage(Object chatId) throws Exception {
-        var acc = facebookService.fetchAdAccounts();
-        acc.setData(acc.getData().stream().filter(i -> i.getAccountStatus() != 1).collect(Collectors.toList()));
-        var text = acc.toTable();
+        var text = facebookService.fetchAdAccounts()
+                .stream()
+                .peek(acc -> acc.setData(acc.getData().stream().filter(i -> i.getAccountStatus() != 1).collect(Collectors.toList())))
+                .map(AdAccounts::toTable)
+                .reduce("", (acc, cur) -> acc + "\n" + "<pre>" + cur + "</pre>");
         return new SendMessage(chatId, text)
-                .parseMode(ParseMode.Markdown)
+                .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(false);
     }
 
     private SendMessage adaccountsThresholdMessage(Object chatId) throws Exception {
-        var acc = facebookService.fetchAdAccounts();
-        acc.setData(acc.getData().stream().filter(i -> i.getAmountSpent().equals(i.getSpendCap())).collect(Collectors.toList()));
-        var text = acc.toTable();
+        var text = facebookService.fetchAdAccounts()
+                .stream()
+                .peek(acc -> acc.setData(acc.getData().stream().filter(i -> i.getAmountSpent().equals(i.getSpendCap())).collect(Collectors.toList())))
+                .map(AdAccounts::toTable)
+                .reduce("", (acc, cur) -> acc + "\n" + "<pre>" + cur + "</pre>");
         return new SendMessage(chatId, text)
-                .parseMode(ParseMode.Markdown)
+                .parseMode(ParseMode.HTML)
                 .disableWebPagePreview(true)
                 .disableNotification(false);
     }

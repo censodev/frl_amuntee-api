@@ -1,4 +1,4 @@
 package com.printway.business.services;
 
-public interface TelegramService {
+public interface TelegramBotService {
 }

@@ -1,8 +1,6 @@
 package com.printway.business.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.printway.business.dto.facebook.AdAccounts;
-import com.printway.business.models.Config;
 import com.printway.business.services.FacebookService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +16,8 @@ public class FacebookController {
     private FacebookService facebookService;
 
     @GetMapping("adaccounts")
-    public List<AdAccounts.AdAccount> listAccount() throws Exception {
-        return facebookService.fetchAdAccounts().getData();
+    public List<AdAccounts> listAccount() throws Exception {
+        return facebookService.fetchAdAccounts();
     }
 
 }
