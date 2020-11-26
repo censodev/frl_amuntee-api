@@ -1,0 +1,24 @@
+server:
+  port: 8001
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:mysql://128.199.118.150:3306/printway_account
+    username: root
+    password: printway@12345678
+
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: aptech.campaign@gmail.com
+    password: 12004917
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
