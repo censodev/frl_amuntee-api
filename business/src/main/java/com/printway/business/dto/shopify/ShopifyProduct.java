@@ -1,4 +1,4 @@
-package com.printway.catalog.dto.shopify;
+package com.printway.business.dto.shopify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class Product {
+public class ShopifyProduct {
     @JsonProperty("id")
     private int id;
 
@@ -17,7 +17,7 @@ public class Product {
     private String createdAt;
 
     @JsonProperty("images")
-    private List<ProductImage> images;
+    private List<ShopifyProductImage> images;
 
     @JsonProperty("product_type")
     private String productType;
@@ -41,8 +41,19 @@ public class Product {
     private String updatedAt;
 
     @JsonProperty("variants")
-    private List<ProductVariant> variants;
+    private List<ShopifyProductVariant> variants;
 
     @JsonProperty("vendor")
     private String vendor;
+
+    public static class ShopifyProductPublishedScope {
+        public static final String WEB = "web";
+        public static final String GLOBAL = "global";
+    }
+
+    public static class ShopifyProductStatus {
+        public static final String ACTIVE = "active";
+        public static final String ARCHIVED = "archived";
+        public static final String DRAFT = "draft";
+    }
 }

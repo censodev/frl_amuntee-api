@@ -32,11 +32,7 @@ zuul:
     config:
       url: http://128.199.118.150:8002/api/config
       path: /api/config/**
-    #Catalog service
-    catalog:
-      url: http://128.199.118.150:8003/api/catalog
-      path: /api/catalog/**
     #File service
     file:
-      url: http://128.199.118.150:8004/api/file
+      url: http://128.199.118.150:8003/api/file
       path: /api/file/**

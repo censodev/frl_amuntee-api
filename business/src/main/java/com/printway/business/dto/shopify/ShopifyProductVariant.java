@@ -1,10 +1,10 @@
-package com.printway.catalog.dto.shopify;
+package com.printway.business.dto.shopify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class ProductVariant {
+public class ShopifyProductVariant {
     @JsonProperty("id")
     private int id;
 

@@ -1,7 +1,7 @@
 package com.printway.business.services;
 
 import com.printway.business.dto.shopify.ShopifyOrder;
-import com.printway.business.dto.shopify.ShopifyOrderList;
+import com.printway.business.dto.shopify.ShopifyOrders;
 import com.printway.business.repositories.StoreRepository;
 import com.printway.common.time.TimeParser;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class ShopifyServiceImpl implements ShopifyService {
                 .append("created_at_min=").append(from)
                 .append("&")
                 .append("limit=").append(limit);
-        var orders = shopifyHttp.getForObject(url.toString(), ShopifyOrderList.class);
+        var orders = shopifyHttp.getForObject(url.toString(), ShopifyOrders.class);
         assert orders != null;
         return orders.getOrders().stream()
                 .sorted(Comparator.comparing(ShopifyOrder::getCode))
