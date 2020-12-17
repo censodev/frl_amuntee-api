@@ -1,42 +1,22 @@
 package com.printway.business.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Product {
     @Id
     @GeneratedValue
     @Column(name = "id", nullable = false)
-    private int id;
-
-    @Basic
-    @Column(name = "code", nullable = true, length = 20, unique = true)
-    private String code;
-
-    @Basic
-    @Column(name = "name", nullable = true, length = 200)
-    private String name;
-
-    @Basic
-    @Column(name = "base_cost", nullable = true, precision = 0)
-    private Double baseCost;
-
-    @Basic
-    @Column(name = "shipping_time", length = 150)
-    private String shippingTime;
-
-    @Basic
-    @Column(name = "processing_time", length = 150)
-    private String processingTime;
+    private Integer id;
 
     @Basic
     @Column(name = "created_at", nullable = true)
@@ -46,27 +26,54 @@ public class Product {
     @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<ProductImage> images;
+
+    @Basic
+    @Column(name = "status")
+    private String status;
+
+    @Lob
+    @Column(name = "body_html")
+    private String bodyHtml;
+
+    @Column(name = "product_type")
+    private String productType;
+
+    @Column(name = "published_at")
+    private LocalDateTime publishedAt;
+
+    @Column(name = "published_scope")
+    private String publishedScope;
+
+    @Column(name = "tags")
+    private String tags;
+
+    @Column(name = "title")
+    private String title;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<ProductVariant> variants;
+
+    @Column(name = "vendor")
+    private String vendor;
+
+    @Column(name = "shopify_id", nullable = false)
+    private long shopifyId;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id")
+    private Store store;
+
+    @ManyToOne
+    @JoinColumn(name = "product_template_id")
+    private ProductTemplate productTemplate;
+
     @Basic
     @Column(name = "created_by", nullable = true)
     private Integer createdBy;
-
-    @Basic
-    @Column(name = "updated_by", nullable = true)
-    private Integer updatedBy;
-
-    @Basic
-    @Column(name = "picture", nullable = true, length = 4000)
-    private String picture;
-
-    @Basic
-    @Column(name = "status", columnDefinition = "integer default 1")
-    private Integer status;
-
-    @ManyToOne
-    @JoinColumn(name = "type_id")
-    private ProductType type;
-
-    @ManyToOne
-    @JoinColumn(name = "supplier_id")
-    private Supplier supplier;
 }

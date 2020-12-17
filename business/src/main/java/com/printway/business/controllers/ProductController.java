@@ -2,11 +2,10 @@ package com.printway.business.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.printway.business.models.Product;
-import com.printway.business.models.ProductType;
+import com.printway.business.models.ProductTemplate;
 import com.printway.business.repositories.ProductRepository;
-import com.printway.business.repositories.ProductTypeRepository;
-import com.printway.business.requests.ProductStoreRequest;
-import com.printway.business.requests.ProductTypeStoreRequest;
+import com.printway.business.repositories.ProductTemplateRepository;
+import com.printway.business.services.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,41 +13,41 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/product")
 @Slf4j
 public class ProductController {
     @Autowired
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @Autowired
-    private ProductTypeRepository productTypeRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
+    private ProductTemplateRepository productTemplateRepository;
 
     @GetMapping("")
-    public Page<Product> list(@RequestParam(defaultValue = "0") int page,
+    public Page<Product> list(@RequestParam(defaultValue = "0") int createdBy,
+                              @RequestParam(defaultValue = "0") int page,
                               @RequestParam(defaultValue = "10") int limit,
                               @RequestParam(defaultValue = "id") String orderBy,
                               @RequestParam(defaultValue = "asc") String order) {
         var sort = order.equals("asc")
                 ? Sort.by(orderBy).ascending()
                 : Sort.by(orderBy).descending();
-        return productRepository.findAll(PageRequest.of(page, limit, sort));
+        if (createdBy == 0)
+            return productService.findAll(PageRequest.of(page, limit, sort));
+        return productService.findAllByCreatedBy(createdBy, PageRequest.of(page, limit, sort));
     }
 
     @GetMapping("{id}")
     public Product findOne(@PathVariable() int id) {
-        return productRepository.findById(id).orElse(null);
+        return productService.find(id);
     }
 
     @PostMapping("")
-    public Product add(@RequestBody ProductStoreRequest request) {
+    public Product add(@RequestBody Product request) {
         try {
-            var prd = objectMapper.convertValue(request, Product.class);
-            prd.setStatus(1);
-            return productRepository.save(prd);
+            return productService.saveAndSync(request);
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw ex;
@@ -57,60 +56,48 @@ public class ProductController {
 
     @PutMapping("{id}")
     public Product update(@PathVariable() int id,
-                       @RequestBody ProductStoreRequest request) {
+                          @RequestBody Product request) {
         try {
-            var prd = objectMapper.convertValue(request, Product.class);
-            prd.setId(id);
-            return productRepository.save(prd);
+            return productService.updateAndSync(id, request);
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw ex;
         }
     }
 
-    @DeleteMapping("{id}")
-    public Product delete(@PathVariable() int id) {
-        try {
-            var prd = productRepository.findById(id).orElse(null);
-            if (prd == null)
-                return null;
-            prd.setStatus(0);
-            return productRepository.save(prd);
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            throw ex;
-        }
-    }
-
-    @GetMapping("type")
-    public Page<ProductType> listTypes(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int limit,
-                                      @RequestParam(defaultValue = "id") String orderBy,
-                                      @RequestParam(defaultValue = "asc") String order) {
+    @GetMapping("template")
+    public Page<ProductTemplate> listTemplates(@RequestParam(defaultValue = "0") int page,
+                                               @RequestParam(defaultValue = "10") int limit,
+                                               @RequestParam(defaultValue = "id") String orderBy,
+                                               @RequestParam(defaultValue = "asc") String order) {
         var sort = order.equals("asc")
                 ? Sort.by(orderBy).ascending()
                 : Sort.by(orderBy).descending();
-        return productTypeRepository.findAll(PageRequest.of(page, limit, sort));
+        return productTemplateRepository.findAll(PageRequest.of(page, limit, sort));
     }
 
-    @PostMapping("type")
-    public ProductType addType(@RequestBody ProductTypeStoreRequest request) {
+    @GetMapping("template/{id}")
+    public ProductTemplate findTemplate(@PathVariable() int id) {
+        return productTemplateRepository.findById(id).orElse(null);
+    }
+
+    @PostMapping("template")
+    public ProductTemplate addTemplate(@RequestBody ProductTemplate request) {
         try {
-            var prd = objectMapper.convertValue(request, ProductType.class);
-            return productTypeRepository.save(prd);
+            request.setStatus(1);
+            return productTemplateRepository.save(request);
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw ex;
         }
     }
 
-    @PutMapping("type/{id}")
-    public ProductType updateType(@PathVariable() int id,
-                              @RequestBody ProductTypeStoreRequest request) {
+    @PutMapping("template/{id}")
+    public ProductTemplate updateTemplate(@PathVariable() int id,
+                                          @RequestBody ProductTemplate request) {
         try {
-            var prd = objectMapper.convertValue(request, ProductType.class);
-            prd.setId(id);
-            return productTypeRepository.save(prd);
+            request.setId(id);
+            return productTemplateRepository.save(request);
         } catch (Exception ex) {
             log.error(ex.getMessage());
             throw ex;

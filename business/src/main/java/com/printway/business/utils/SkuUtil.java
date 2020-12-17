@@ -1,9 +1,11 @@
 package com.printway.business.utils;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@AllArgsConstructor
 @Slf4j
 public class SkuUtil {
     private String supplierCode = null;
@@ -23,4 +25,7 @@ public class SkuUtil {
         }
     }
 
+    public String generateSku() {
+        return String.format("%s-%s-%s%s", supplierCode, productCode, sellerCode, designCode);
+    }
 }

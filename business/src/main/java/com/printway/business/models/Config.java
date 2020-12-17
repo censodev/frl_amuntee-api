@@ -25,8 +25,5 @@ public class Config {
     @Column(name = "facebook_token")
     private String facebookToken;
 
-    @Column(name = "telegram_bot_token")
-    private String telegramBotToken;
-
     private Integer status;
 }

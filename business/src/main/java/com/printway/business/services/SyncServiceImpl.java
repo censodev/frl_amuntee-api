@@ -1,13 +1,9 @@
 package com.printway.business.services;
 
 import com.printway.business.dto.shopify.ShopifyOrder;
-import com.printway.business.models.MarketingFee;
-import com.printway.business.models.Order;
-import com.printway.business.models.OrderProduct;
-import com.printway.business.repositories.MarketingFeeRepository;
-import com.printway.business.repositories.OrderProductRepository;
-import com.printway.business.repositories.OrderRepository;
-import com.printway.business.repositories.StoreRepository;
+import com.printway.business.dto.shopify.ShopifyProductQueryParam;
+import com.printway.business.models.*;
+import com.printway.business.repositories.*;
 import com.printway.business.utils.SkuUtil;
 import com.printway.common.time.TimeParser;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +40,12 @@ public class SyncServiceImpl implements SyncService {
 
     @Autowired
     private MarketingFeeRepository marketingFeeRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private ProductService productService;
 
     @Override
     public boolean syncShopifyOrders(int limit, boolean testMode) {
@@ -104,6 +106,31 @@ public class SyncServiceImpl implements SyncService {
                 });
             });
         });
+        return true;
+    }
+
+    @Override
+    public boolean syncShopifyProducts(int limit, boolean testMode) {
+        var stores = storeRepository.findAllByStatus(1);
+        try {
+            for (var store : stores) {
+                var shopifyProducts = shopifyService.fetchProducts(new ShopifyProductQueryParam(
+                        store.getId(),
+                        limit,
+                        null
+                ));
+
+                var products = shopifyProducts.stream()
+                        .map(shopifyProduct -> productService.convert(null, shopifyProduct, store, 9, null, null, null))
+                        .collect(Collectors.toList());
+                if (testMode)
+                    continue;
+                productRepository.saveAll(products);
+            }
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return false;
+        }
         return true;
     }
 

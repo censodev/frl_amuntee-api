@@ -1,10 +1,8 @@
 package com.printway.business.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.printway.business.models.ProductType;
 import com.printway.business.models.Supplier;
 import com.printway.business.repositories.SupplierRepository;
-import com.printway.business.requests.ProductTypeStoreRequest;
 import com.printway.business.requests.SupplierStoreRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

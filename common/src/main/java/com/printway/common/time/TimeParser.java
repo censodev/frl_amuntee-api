@@ -16,7 +16,9 @@ public class TimeParser {
     }
 
     public static String parseLocalDateTimeToISOString(LocalDateTime localDateTime) {
-        return  DateTimeFormatter.ISO_ZONED_DATE_TIME.format(localDateTime.atZone(ZoneId.systemDefault()));
+        return localDateTime == null
+                ? null
+                : DateTimeFormatter.ISO_ZONED_DATE_TIME.format(localDateTime.atZone(ZoneId.systemDefault()));
     }
 
     public static LocalDateTime parseEpochMillisToLocalDateTime(Long epochMillis) {

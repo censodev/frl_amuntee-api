@@ -21,6 +21,7 @@ public class FileController {
     @PostMapping("upload")
     public ResponseEntity<RestResponse> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
+            log.info(file.toString());
             var url = fileService.save(file);
             var message = "Uploaded the file successfully";
             return ResponseEntity.ok(new RestResponse(true, message, url));

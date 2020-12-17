@@ -22,9 +22,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                        .antMatchers(jwtProvider.getUri()).permitAll()
+                        .antMatchers(jwtProvider.getUri(), "/api/product/**", "/api/store/**").permitAll()
                         .antMatchers(
-                                "/api/user/**", "/api/store/**", "/api/product/**", "/api/supplier/**", "/api/dispute/**", "/api/config/**")
+                                "/api/user/**", "/api/supplier/**", "/api/dispute/**", "/api/config/**")
                                 .hasRole("ADMIN")
                         .anyRequest().authenticated();
     }

@@ -33,7 +33,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
 //                sum(prd.base_cost * oprd.quantity) base_cost_fee
 //                from orders ord
 //                join orders_products oprd on ord.code = oprd.order_code
-//                left join products prd on oprd.product_code = prd.code
+//                left join product_templates prd on oprd.product_code = prd.code
 //                where ord.revenue > 0
 //                and oprd.seller_code = :sellerCode
 //        group by ord.code
@@ -59,7 +59,7 @@ public class OrderCustomRepositoryImpl implements OrderCustomRepository {
                         "               from orders ord\n" +
                         "                        join orders_products oprd\n" +
                         "                             on ord.code = oprd.order_code\n" +
-                        "                        left join products prd\n" +
+                        "                        left join product_templates prd\n" +
                         "                                  on oprd.product_code = prd.code\n" +
                         "               where ord.revenue > 0\n" +
                         qrSeller +

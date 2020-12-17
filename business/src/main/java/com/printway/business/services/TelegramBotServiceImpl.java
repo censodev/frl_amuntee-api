@@ -36,7 +36,7 @@ public class TelegramBotServiceImpl implements TelegramBotService {
         String ADACCOUNTS_THRESHOLD = "/adaccountsthreshold";
     }
 
-    @PostConstruct
+//    @PostConstruct
     protected void postConstruct() {
         bot = new TelegramBot(botToken);
         new Timer().scheduleAtFixedRate(new TimerTask(){
