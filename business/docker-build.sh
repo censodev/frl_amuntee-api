@@ -1,1 +1,1 @@
-docker build -t printway-business .
+docker build -t censodev/printway-business .

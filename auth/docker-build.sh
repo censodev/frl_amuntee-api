@@ -1,1 +1,1 @@
-docker build -t printway-auth .
+docker build -t censodev/printway-auth .

@@ -1,1 +1,1 @@
-docker build -t printway-gateway .
+docker build -t censodev/printway-gateway .
