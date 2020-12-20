@@ -2,6 +2,7 @@ package com.printway.business.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ProductImage {
     @Id
     @GeneratedValue
@@ -19,23 +21,20 @@ public class ProductImage {
     private Integer id;
 
     @Column(name = "shopify_id", nullable = false)
-    private long shopifyId;
+    private Long shopifyId;
 
     @Column(name = "position")
-    private int position;
+    private Integer position;
 
+    @Lob
     @Column(name = "src")
     private String src;
 
     @Column(name = "width")
-    private int width;
+    private Integer width;
 
     @Column(name = "height")
-    private int height;
-
-    @Lob
-    @Column(name = "attachment")
-    private String attachment;
+    private Integer height;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

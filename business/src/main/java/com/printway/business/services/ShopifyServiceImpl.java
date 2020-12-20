@@ -15,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -97,11 +98,42 @@ public class ShopifyServiceImpl implements ShopifyService {
         return Objects.requireNonNull(res.getBody()).getProduct();
     }
 
+    @Override
+    public ShopifyProductImage saveImage(String src, Long shopifyProductId, int storeId) {
+        var store = storeRepository.findById(storeId).orElse(null);
+        assert store != null;
+        var shopifyHttp = getShopifyHttpClient(store.getApiKey(), store.getPassword());
+        String url = store.getHost() + "/admin/api/2020-10/products/" + shopifyProductId + "/images.json";
+        var image = new ShopifyProductImage();
+        image.setSrc(src);
+        var body = HttpProductImage.builder().image(image).build();
+        var res = shopifyHttp.postForObject(url, body, HttpProductImage.class);
+        assert res != null;
+        return res.getImage();
+    }
+
+    @Override
+    public void deleteImage(Long id, Long shopifyProductId, int storeId) {
+        var store = storeRepository.findById(storeId).orElse(null);
+        assert store != null;
+        var shopifyHttp = getShopifyHttpClient(store.getApiKey(), store.getPassword());
+        String url = store.getHost() + "/admin/api/2020-10/products/" + shopifyProductId + "/images/" + id + ".json";
+        shopifyHttp.delete(url);
+    }
+
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     private static class HttpProduct {
         private ShopifyProduct product;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class HttpProductImage {
+        private ShopifyProductImage image;
     }
 }

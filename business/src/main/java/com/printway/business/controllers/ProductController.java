@@ -1,9 +1,9 @@
 package com.printway.business.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.printway.business.dto.ImageUpload;
 import com.printway.business.models.Product;
+import com.printway.business.models.ProductImage;
 import com.printway.business.models.ProductTemplate;
-import com.printway.business.repositories.ProductRepository;
 import com.printway.business.repositories.ProductTemplateRepository;
 import com.printway.business.services.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("api/product")
@@ -102,5 +101,17 @@ public class ProductController {
             log.error(ex.getMessage());
             throw ex;
         }
+    }
+
+    @PostMapping("image")
+    public ProductImage saveImage(@RequestBody ImageUpload request) {
+        return productService.saveAndSyncImage(request);
+    }
+
+    @DeleteMapping("image")
+    public void deleteImage(@RequestParam Long id,
+                            @RequestParam Long shopifyProductId,
+                            @RequestParam int storeId) {
+        productService.deleteAndSyncImage(id, shopifyProductId, storeId);
     }
 }

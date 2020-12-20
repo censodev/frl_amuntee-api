@@ -8,23 +8,26 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShopifyProductImage {
     @JsonProperty("id")
-    private long id;
+    private Long id;
 
     @JsonProperty("position")
-    private int position;
+    private Integer position;
 
     @JsonProperty("product_id")
-    private long productId;
+    private Long productId;
 
     @JsonProperty("src")
     private String src;
 
     @JsonProperty("width")
-    private int width;
+    private Integer width;
 
     @JsonProperty("height")
-    private int height;
+    private Integer height;
 
     @JsonProperty("attachment")
     private String attachment;
+
+    @JsonProperty("filename")
+    private String filename;
 }

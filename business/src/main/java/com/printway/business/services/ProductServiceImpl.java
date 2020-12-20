@@ -1,11 +1,13 @@
 package com.printway.business.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.printway.business.dto.ImageUpload;
 import com.printway.business.dto.shopify.ShopifyProduct;
 import com.printway.business.dto.shopify.ShopifyProductImage;
 import com.printway.business.dto.shopify.ShopifyProductVariant;
 import com.printway.business.models.*;
+import com.printway.business.repositories.ProductImageRepository;
 import com.printway.business.repositories.ProductRepository;
-import com.printway.business.utils.SkuUtil;
 import com.printway.common.time.TimeParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ShopifyService shopifyService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private ProductImageRepository productImageRepository;
 
     @Override
     public Page<Product> findAll(Pageable pageable) {
@@ -96,6 +104,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductImage saveAndSyncImage(ImageUpload imageUpload) {
+        var shopifyImage = shopifyService.saveImage(imageUpload.getSrc(), imageUpload.getShopifyProductId(), imageUpload.getStoreId());
+        var product = productRepository.findByShopifyId(shopifyImage.getProductId());
+        var image = ProductImage.builder()
+                .position(shopifyImage.getPosition())
+                .width(shopifyImage.getWidth())
+                .height(shopifyImage.getHeight())
+                .shopifyId(shopifyImage.getId())
+                .src(shopifyImage.getSrc())
+                .product(product)
+                .build();
+        image = productImageRepository.save(image);
+        product.setImages(null);
+        image.setProduct(product);
+        return image;
+    }
+
+    @Override
+    public void deleteAndSyncImage(Long id, Long shopifyProductId, int storeId) {
+        shopifyService.deleteImage(id, shopifyProductId, storeId);
+        productImageRepository.delete(productImageRepository.findByShopifyId(id));
+    }
+
+    @Override
     public Product convert(Integer id,
                            ShopifyProduct shopifyProduct,
                            Store store,
@@ -123,7 +155,7 @@ public class ProductServiceImpl implements ProductService {
             prd.setVariants(shopifyProduct.getVariants().stream().map(prdVariant -> {
                 var variant = variants != null
                         ? variants.stream()
-                                .filter(var -> var.getOption1().equals(prdVariant.getOption1()))
+                                .filter(var -> var.getShopifyId() == prdVariant.getId())
                                 .findFirst().orElse(new ProductVariant())
                         : new ProductVariant();
                 variant.setBarcode(prdVariant.getBarcode());
@@ -143,9 +175,12 @@ public class ProductServiceImpl implements ProductService {
             }).collect(Collectors.toList()));
         if (shopifyProduct.getImages() != null && shopifyProduct.getImages().size() > 0)
             prd.setImages(shopifyProduct.getImages().stream().map(productImage -> {
-                var img = new ProductImage();
-                // TODO: Xử lí phần này lúc sửa sản phẩm -> ko có sys id -> thêm mới ảnh
-//                img.setId();
+                var img = images != null
+                        ? images.stream()
+                                .filter(i -> i.getShopifyId() == productImage.getId())
+                                .findFirst()
+                                .orElse(new ProductImage())
+                        : new ProductImage();
                 img.setShopifyId(productImage.getId());
                 img.setHeight(productImage.getHeight());
                 img.setPosition(productImage.getPosition());
@@ -188,20 +223,16 @@ public class ProductServiceImpl implements ProductService {
                 variant.setOption3(prdVariant.getOption3());
                 return variant;
             }).collect(Collectors.toList()));
-//        if (product.getImages() != null && product.getImages().size() > 0)
-//            shopifyPrd.setImages(product.getImages().stream().map(productImage -> {
-//                var img = new ShopifyProductImage();
-//                if (productImage.getShopifyId() == 0) {
-//                    img.setAttachment(productImage.getAttachment());
-//                    return img;
-//                }
-//                img.setId(productImage.getShopifyId());
-//                img.setHeight(productImage.getHeight());
-//                img.setPosition(productImage.getPosition());
-//                img.setWidth(productImage.getWidth());
-//                img.setSrc(productImage.getSrc());
-//                return img;
-//            }).collect(Collectors.toList()));
+        if (product.getImages() != null && product.getImages().size() > 0)
+            shopifyPrd.setImages(product.getImages().stream().map(productImage -> {
+                var img = new ShopifyProductImage();
+                if (productImage.getShopifyId() == null) {
+                    img.setAttachment(productImage.getSrc());
+                    return img;
+                }
+                img.setId(productImage.getShopifyId());
+                return img;
+            }).collect(Collectors.toList()));
         return shopifyPrd;
     }
 }

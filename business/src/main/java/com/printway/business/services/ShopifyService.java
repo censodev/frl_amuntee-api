@@ -2,6 +2,7 @@ package com.printway.business.services;
 
 import com.printway.business.dto.shopify.ShopifyOrder;
 import com.printway.business.dto.shopify.ShopifyProduct;
+import com.printway.business.dto.shopify.ShopifyProductImage;
 import com.printway.business.dto.shopify.ShopifyProductQueryParam;
 
 import java.time.LocalDateTime;
@@ -12,4 +13,6 @@ public interface ShopifyService {
     List<ShopifyProduct> fetchProducts(ShopifyProductQueryParam params);
     ShopifyProduct saveProduct(ShopifyProduct shopifyProduct, int storeId);
     ShopifyProduct updateProduct(ShopifyProduct shopifyProduct, int storeId);
+    ShopifyProductImage saveImage(String src, Long shopifyProductId, int storeId);
+    void deleteImage(Long id, Long shopifyProductId, int storeId);
 }

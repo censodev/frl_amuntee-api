@@ -10,7 +10,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ShopifyProduct {
     @JsonProperty("id")
-    private long id;
+    private Long id;
 
     @JsonProperty("body_html")
     private String bodyHtml;
