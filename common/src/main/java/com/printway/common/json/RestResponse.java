@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RestResponse {
+public class RestResponse<T> {
     private boolean status;
     private String message;
-    private Object data;
+    private T data;
 }

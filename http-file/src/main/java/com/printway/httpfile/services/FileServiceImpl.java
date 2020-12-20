@@ -38,7 +38,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public String save(MultipartFile file) {
+    public File save(MultipartFile file) {
         try {
             var filename = generateFileName(Objects.requireNonNull(file.getOriginalFilename()));
             Files.copy(file.getInputStream(), root.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
@@ -49,7 +49,7 @@ public class FileServiceImpl implements FileService {
             dbFile.setStatus(FileStatus.USING);
             fileRepository.save(dbFile);
             log.info("FILE UPLOADED: " + dbFile.toString());
-            return filename;
+            return dbFile;
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }

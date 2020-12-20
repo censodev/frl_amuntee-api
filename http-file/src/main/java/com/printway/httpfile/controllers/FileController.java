@@ -1,6 +1,7 @@
 package com.printway.httpfile.controllers;
 
 import com.printway.common.json.RestResponse;
+import com.printway.httpfile.models.File;
 import com.printway.httpfile.services.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +20,18 @@ public class FileController {
     private FileService fileService;
 
     @PostMapping("upload")
-    public ResponseEntity<RestResponse> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<RestResponse<File>> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             log.info(file.toString());
-            var url = fileService.save(file);
+            var rs = fileService.save(file);
             var message = "Uploaded the file successfully";
-            return ResponseEntity.ok(new RestResponse(true, message, url));
+            return ResponseEntity.ok(new RestResponse<File>(true, message, rs));
         } catch (Exception ex) {
             log.error(ex.getMessage());
             var message = "Could not upload the file";
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
-                    .body(new RestResponse(false, message, null));
+                    .body(new RestResponse<File>(false, message, null));
         }
     }
 
