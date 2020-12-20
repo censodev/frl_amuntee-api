@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Random;
@@ -71,12 +72,8 @@ public class FileServiceImpl implements FileService {
     }
 
     private String generateFileName(String originName) {
-        var now =  String.valueOf(new Date().getTime());
+        var now =  String.valueOf(Instant.now().toEpochMilli());
         var random = String.format("%06d", new Random().nextInt(999999));
-        return now
-                .concat("_")
-                .concat(random)
-                .concat("_")
-                .concat(originName.toLowerCase());
+        return now.concat(random).concat(originName);
     }
 }
