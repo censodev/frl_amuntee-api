@@ -1,13 +1,13 @@
-package com.printway.httpfile;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class HttpFileApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
-}
+//package com.printway.httpfile;
+//
+//import org.junit.jupiter.api.Test;
+//import org.springframework.boot.test.context.SpringBootTest;
+//
+//@SpringBootTest
+//class HttpFileApplicationTests {
+//
+//	@Test
+//	void contextLoads() {
+//	}
+//
+//}
