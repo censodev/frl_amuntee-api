@@ -40,15 +40,16 @@ public class FileServiceImpl implements FileService {
     @Override
     public String save(MultipartFile file) {
         try {
-            var fileName = generateFileName(Objects.requireNonNull(file.getOriginalFilename()));
-            Files.copy(file.getInputStream(), root.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+            var filename = generateFileName(Objects.requireNonNull(file.getOriginalFilename()));
+            Files.copy(file.getInputStream(), root.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
             var dbFile = new File();
-            dbFile.setName(fileName);
+            dbFile.setName(filename);
             dbFile.setType(file.getContentType());
             dbFile.setSize(file.getSize());
             dbFile.setStatus(FileStatus.USING);
             fileRepository.save(dbFile);
-            return fileName;
+            log.info("FILE UPLOADED: " + dbFile.toString());
+            return filename;
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }

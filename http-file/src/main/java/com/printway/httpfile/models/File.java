@@ -2,12 +2,14 @@ package com.printway.httpfile.models;
 
 import com.printway.httpfile.utils.FileStatus;
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "files", schema = "printway_files_storage")
 @Data
+@ToString
 public class File {
     @Id
     @Column(name = "id", nullable = false)
