@@ -39,9 +39,23 @@ public class FileController {
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         try {
             var file = fileService.load(filename);
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
-                    .body(file);
+            var ext = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+            var mime = "";
+            switch (ext) {
+                case "png": mime = "image/png"; break;
+                case "jpeg": mime = "image/jpeg"; break;
+                case "jpg": mime = "image/jpg"; break;
+                case "gif": mime = "image/gif"; break;
+            }
+
+            if (ext.isEmpty())
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                        .body(file);
+            else
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, mime)
+                        .body(file);
         } catch (Exception ex) {
             return  ResponseEntity.notFound().build();
         }
