@@ -117,6 +117,7 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         image = productImageRepository.save(image);
         product.setImages(null);
+        product.setVariants(null);
         image.setProduct(product);
         return image;
     }
