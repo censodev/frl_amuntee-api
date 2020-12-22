@@ -15,4 +15,5 @@ public interface ShopifyService {
     ShopifyProduct updateProduct(ShopifyProduct shopifyProduct, int storeId);
     ShopifyProductImage saveImage(String src, Long shopifyProductId, int storeId);
     void deleteImage(Long id, Long shopifyProductId, int storeId);
+    ShopifyProductImage saveImageAsBase64(String src, Long shopifyProductId, int storeId);
 }

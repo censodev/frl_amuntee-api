@@ -15,6 +15,7 @@ public interface ProductService {
     Product saveAndSync(Product product);
     Product updateAndSync(int id, Product product);
     ProductImage saveAndSyncImage(ImageUpload imageUpload);
+    ProductImage saveAndSyncImageBase64(ImageUpload imageUpload);
     void deleteAndSyncImage(Long id, Long shopifyProductId, int storeId);
     Product convert(Integer id,
                     ShopifyProduct shopifyProduct,

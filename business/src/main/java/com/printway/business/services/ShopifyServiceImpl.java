@@ -121,6 +121,21 @@ public class ShopifyServiceImpl implements ShopifyService {
         shopifyHttp.delete(url);
     }
 
+    @Override
+    public ShopifyProductImage saveImageAsBase64(String src, Long shopifyProductId, int storeId) {
+        var store = storeRepository.findById(storeId).orElse(null);
+        assert store != null;
+        var shopifyHttp = getShopifyHttpClient(store.getApiKey(), store.getPassword());
+        String url = store.getHost() + "/admin/api/2020-10/products/" + shopifyProductId + "/images.json";
+        var image = new ShopifyProductImage();
+        image.setAttachment(src);
+        image.setFilename(Instant.now().toEpochMilli() + ".png");
+        var body = HttpProductImage.builder().image(image).build();
+        var res = shopifyHttp.postForObject(url, body, HttpProductImage.class);
+        assert res != null;
+        return res.getImage();
+    }
+
     @Data
     @Builder
     @NoArgsConstructor

@@ -114,4 +114,9 @@ public class ProductController {
                             @RequestParam int storeId) {
         productService.deleteAndSyncImage(id, shopifyProductId, storeId);
     }
+
+    @PostMapping("image-base64")
+    public ProductImage saveImageBase64(@RequestBody ImageUpload request) {
+        return productService.saveAndSyncImageBase64(request);
+    }
 }

@@ -123,6 +123,25 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductImage saveAndSyncImageBase64(ImageUpload imageUpload) {
+        var shopifyImage = shopifyService.saveImageAsBase64(imageUpload.getSrc(), imageUpload.getShopifyProductId(), imageUpload.getStoreId());
+        var product = productRepository.findByShopifyId(shopifyImage.getProductId());
+        var image = ProductImage.builder()
+                .position(shopifyImage.getPosition())
+                .width(shopifyImage.getWidth())
+                .height(shopifyImage.getHeight())
+                .shopifyId(shopifyImage.getId())
+                .src(shopifyImage.getSrc())
+                .product(product)
+                .build();
+        image = productImageRepository.save(image);
+        product.setImages(null);
+        product.setVariants(null);
+        image.setProduct(product);
+        return image;
+    }
+
+    @Override
     public void deleteAndSyncImage(Long id, Long shopifyProductId, int storeId) {
         shopifyService.deleteImage(id, shopifyProductId, storeId);
         productImageRepository.delete(productImageRepository.findByShopifyId(id));
@@ -224,16 +243,16 @@ public class ProductServiceImpl implements ProductService {
                 variant.setOption3(prdVariant.getOption3());
                 return variant;
             }).collect(Collectors.toList()));
-        if (product.getImages() != null && product.getImages().size() > 0)
-            shopifyPrd.setImages(product.getImages().stream().map(productImage -> {
-                var img = new ShopifyProductImage();
-                if (productImage.getShopifyId() == null) {
-                    img.setAttachment(productImage.getSrc());
-                    return img;
-                }
-                img.setId(productImage.getShopifyId());
-                return img;
-            }).collect(Collectors.toList()));
+//        if (product.getImages() != null && product.getImages().size() > 0)
+//            shopifyPrd.setImages(product.getImages().stream().map(productImage -> {
+//                var img = new ShopifyProductImage();
+//                if (productImage.getShopifyId() == null) {
+//                    img.setAttachment(productImage.getSrc());
+//                    return img;
+//                }
+//                img.setId(productImage.getShopifyId());
+//                return img;
+//            }).collect(Collectors.toList()));
         return shopifyPrd;
     }
 }

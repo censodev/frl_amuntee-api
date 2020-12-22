@@ -22,10 +22,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                 .addFilterBefore(new JwtTokenAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                        .antMatchers(jwtProvider.getUri(), "/api/product/**", "/api/store/**", "/api/file/**").permitAll()
                         .antMatchers(
-                                "/api/user/**", "/api/supplier/**", "/api/dispute/**", "/api/config/**")
-                                .hasRole("ADMIN")
+                                jwtProvider.getUri(),
+                                "/favicon.ico",
+                                "/api/product/**",
+                                "/api/store/**",
+                                "/api/file/**"
+                        ).permitAll()
+                        .antMatchers(
+                                "/api/user/**",
+                                "/api/supplier/**",
+                                "/api/dispute/**",
+                                "/api/config/**"
+                        ).hasRole("ADMIN")
                         .anyRequest().authenticated();
     }
 
