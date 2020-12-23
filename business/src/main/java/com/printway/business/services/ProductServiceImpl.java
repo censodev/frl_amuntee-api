@@ -1,13 +1,12 @@
 package com.printway.business.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.printway.business.dto.ImageUpload;
 import com.printway.business.dto.shopify.ShopifyProduct;
-import com.printway.business.dto.shopify.ShopifyProductImage;
 import com.printway.business.dto.shopify.ShopifyProductVariant;
 import com.printway.business.models.*;
 import com.printway.business.repositories.ProductImageRepository;
 import com.printway.business.repositories.ProductRepository;
+import com.printway.business.repositories.ProductVariantRepository;
 import com.printway.common.time.TimeParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +27,10 @@ public class ProductServiceImpl implements ProductService {
     private ShopifyService shopifyService;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ProductImageRepository productImageRepository;
 
     @Autowired
-    private ProductImageRepository productImageRepository;
+    private ProductVariantRepository productVariantRepository;
 
     @Override
     public Page<Product> findAll(Pageable pageable) {
@@ -236,5 +235,88 @@ public class ProductServiceImpl implements ProductService {
 //                return img;
 //            }).collect(Collectors.toList()));
         return shopifyPrd;
+    }
+
+    @Override
+    public ProductVariant findVariant(Integer id) {
+        var variant = this.productVariantRepository.findById(id).orElse(null);
+        var product = variant.getProduct();
+        product.setVariants(null);
+        product.setImages(product.getImages().stream().peek(img -> img.setProduct(null)).collect(Collectors.toList()));
+        variant.setProduct(product);
+        return variant;
+    }
+
+    @Override
+    public ProductVariant updateVariant(Integer id, ProductVariant variant, int storeId) {
+        var product = variant.getProduct();
+        product.setVariants(null);
+        product.setImages(product.getImages().stream().peek(img -> img.setProduct(null)).collect(Collectors.toList()));
+        var shopifyVariant = ShopifyProductVariant.builder()
+                .id(variant.getShopifyId())
+                .barcode(variant.getBarcode())
+                .option1(variant.getOption1())
+                .option2(variant.getOption2())
+                .option3(variant.getOption3())
+                .price(variant.getPrice())
+                .compareAtPrice(variant.getCompareAtPrice())
+                .sku(variant.getSku())
+                .imageId(variant.getImageId())
+                .build();
+        shopifyVariant = shopifyService.updateProductVariant(shopifyVariant, storeId);
+        variant = ProductVariant.builder()
+                .id(id)
+                .shopifyId(shopifyVariant.getId())
+                .barcode(shopifyVariant.getBarcode())
+                .option1(shopifyVariant.getOption1())
+                .option2(shopifyVariant.getOption2())
+                .option3(shopifyVariant.getOption3())
+                .price(shopifyVariant.getPrice())
+                .compareAtPrice(shopifyVariant.getCompareAtPrice())
+                .sku(shopifyVariant.getSku())
+                .imageId(shopifyVariant.getImageId())
+                .createdAt(shopifyVariant.getCreatedAt())
+                .updatedAt(shopifyVariant.getUpdatedAt())
+                .product(product)
+                .build();
+        variant = productVariantRepository.save(variant);
+        variant.setProduct(product);
+        return variant;
+    }
+
+    @Override
+    public ProductVariant createVariant(ProductVariant variant, int storeId) {
+        var product = variant.getProduct();
+        product.setVariants(null);
+        product.setImages(product.getImages().stream().peek(img -> img.setProduct(null)).collect(Collectors.toList()));
+        var shopifyVariant = ShopifyProductVariant.builder()
+                .id(variant.getShopifyId())
+                .barcode(variant.getBarcode())
+                .option1(variant.getOption1())
+                .option2(variant.getOption2())
+                .option3(variant.getOption3())
+                .price(variant.getPrice())
+                .compareAtPrice(variant.getCompareAtPrice())
+                .sku(variant.getSku())
+                .imageId(variant.getImageId())
+                .build();
+        shopifyVariant = shopifyService.saveProductVariant(variant.getProduct().getShopifyId(), shopifyVariant, storeId);
+        variant = ProductVariant.builder()
+                .shopifyId(shopifyVariant.getId())
+                .barcode(shopifyVariant.getBarcode())
+                .option1(shopifyVariant.getOption1())
+                .option2(shopifyVariant.getOption2())
+                .option3(shopifyVariant.getOption3())
+                .price(shopifyVariant.getPrice())
+                .compareAtPrice(shopifyVariant.getCompareAtPrice())
+                .sku(shopifyVariant.getSku())
+                .imageId(shopifyVariant.getImageId())
+                .createdAt(shopifyVariant.getCreatedAt())
+                .updatedAt(shopifyVariant.getUpdatedAt())
+                .product(product)
+                .build();
+        variant = productVariantRepository.save(variant);
+        variant.setProduct(product);
+        return variant;
     }
 }

@@ -4,6 +4,7 @@ import com.printway.business.dto.ImageUpload;
 import com.printway.business.models.Product;
 import com.printway.business.models.ProductImage;
 import com.printway.business.models.ProductTemplate;
+import com.printway.business.models.ProductVariant;
 import com.printway.business.repositories.ProductTemplateRepository;
 import com.printway.business.services.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -118,5 +119,21 @@ public class ProductController {
     @PostMapping("image-base64")
     public ProductImage saveImageBase64(@RequestBody ImageUpload request) {
         return productService.saveAndSyncImageBase64(request);
+    }
+
+    @GetMapping("variant/{id}")
+    public ProductVariant findVariant(@PathVariable Integer id) {
+        return productService.findVariant(id);
+    }
+
+    @PostMapping("variant")
+    public ProductVariant saveVariant(@RequestBody ProductVariant variant) {
+        return productService.createVariant(variant, variant.getProduct().getStore().getId());
+    }
+
+    @PutMapping("variant/{id}")
+    public ProductVariant updateVariant(@RequestBody ProductVariant variant,
+                                        @PathVariable Integer id) {
+        return productService.updateVariant(id, variant, variant.getProduct().getStore().getId());
     }
 }

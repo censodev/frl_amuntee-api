@@ -136,6 +136,30 @@ public class ShopifyServiceImpl implements ShopifyService {
         return res.getImage();
     }
 
+    @Override
+    public ShopifyProductVariant saveProductVariant(Long shopifyProductId, ShopifyProductVariant variant, int storeId) {
+        var store = storeRepository.findById(storeId).orElse(null);
+        assert store != null;
+        var shopifyHttp = getShopifyHttpClient(store.getApiKey(), store.getPassword());
+        String url = store.getHost() + "/admin/api/2020-10/products/" + shopifyProductId + "/variants.json";
+        var body = HttpProductVariant.builder().variant(variant).build();
+        var res = shopifyHttp.postForObject(url, body, HttpProductVariant.class);
+        assert res != null;
+        return res.getVariant();
+    }
+
+    @Override
+    public ShopifyProductVariant updateProductVariant(ShopifyProductVariant variant, int storeId) {
+        var store = storeRepository.findById(storeId).orElse(null);
+        assert store != null;
+        var shopifyHttp = getShopifyHttpClient(store.getApiKey(), store.getPassword());
+        String url = store.getHost() + "/admin/api/2020-10/variants/" + variant.getId() + ".json";
+        var body = HttpProductVariant.builder().variant(variant).build();
+        var entity = new HttpEntity<HttpProductVariant>(body);
+        var res = shopifyHttp.exchange(url, HttpMethod.PUT, entity, HttpProductVariant.class);
+        return Objects.requireNonNull(res.getBody()).getVariant();
+    }
+
     @Data
     @Builder
     @NoArgsConstructor
@@ -150,5 +174,13 @@ public class ShopifyServiceImpl implements ShopifyService {
     @AllArgsConstructor
     private static class HttpProductImage {
         private ShopifyProductImage image;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private static class HttpProductVariant {
+        private ShopifyProductVariant variant;
     }
 }

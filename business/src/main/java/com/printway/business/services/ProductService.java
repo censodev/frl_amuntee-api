@@ -24,4 +24,7 @@ public interface ProductService {
                     ProductTemplate productTemplate,
                     List<ProductVariant> variants);
     ShopifyProduct convert(Product product);
+    ProductVariant findVariant(Integer id);
+    ProductVariant updateVariant(Integer id, ProductVariant variant, int storeId);
+    ProductVariant createVariant(ProductVariant variant, int storeId);
 }
