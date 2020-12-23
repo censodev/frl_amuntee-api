@@ -22,7 +22,6 @@ public interface ProductService {
                     Store store,
                     Integer createdBy,
                     ProductTemplate productTemplate,
-                    List<ProductVariant> variants,
-                    List<ProductImage> images);
+                    List<ProductVariant> variants);
     ShopifyProduct convert(Product product);
 }

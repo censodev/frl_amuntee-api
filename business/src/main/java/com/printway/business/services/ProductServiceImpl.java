@@ -74,7 +74,7 @@ public class ProductServiceImpl implements ProductService {
         shopifyProduct = shopifyService.saveProduct(shopifyProduct, product.getStore().getId());
 
 //        create on db
-        var productToSaveDB = convert(null, shopifyProduct, product.getStore(), product.getCreatedBy(), product.getProductTemplate(), null, null);
+        var productToSaveDB = convert(null, shopifyProduct, product.getStore(), product.getCreatedBy(), product.getProductTemplate(), null);
         productToSaveDB = productRepository.save(productToSaveDB);
 
 //        return
@@ -92,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
         shopifyProduct = shopifyService.updateProduct(shopifyProduct, product.getStore().getId());
 
 //        update db
-        var productToSaveDB = convert(id, shopifyProduct, product.getStore(), product.getCreatedBy(), product.getProductTemplate(), product.getVariants(), product.getImages());
+        var productToSaveDB = convert(id, shopifyProduct, product.getStore(), product.getCreatedBy(), product.getProductTemplate(), product.getVariants());
         productToSaveDB = productRepository.save(productToSaveDB);
 
 //        return
@@ -153,10 +153,8 @@ public class ProductServiceImpl implements ProductService {
                            Store store,
                            Integer createdBy,
                            ProductTemplate productTemplate,
-                           List<ProductVariant> variants,
-                           List<ProductImage> images) {
-        var prd = new Product();
-        prd.setId(id);
+                           List<ProductVariant> variants) {
+        var prd = productRepository.findById(id).orElse(new Product());
         prd.setShopifyId(shopifyProduct.getId());
         prd.setBodyHtml(shopifyProduct.getBodyHtml());
         prd.setCreatedAt(TimeParser.parseZonedDateTimeToLocalDateTime(shopifyProduct.getCreatedAt()));
@@ -192,22 +190,6 @@ public class ProductServiceImpl implements ProductService {
                 variant.setOption3(prdVariant.getOption3());
                 variant.setProduct(prd);
                 return variant;
-            }).collect(Collectors.toList()));
-        if (shopifyProduct.getImages() != null && shopifyProduct.getImages().size() > 0)
-            prd.setImages(shopifyProduct.getImages().stream().map(productImage -> {
-                var img = images != null
-                        ? images.stream()
-                                .filter(i -> i.getShopifyId() == productImage.getId())
-                                .findFirst()
-                                .orElse(new ProductImage())
-                        : new ProductImage();
-                img.setShopifyId(productImage.getId());
-                img.setHeight(productImage.getHeight());
-                img.setPosition(productImage.getPosition());
-                img.setWidth(productImage.getWidth());
-                img.setSrc(productImage.getSrc());
-                img.setProduct(prd);
-                return img;
             }).collect(Collectors.toList()));
         return prd;
     }

@@ -121,7 +121,7 @@ public class SyncServiceImpl implements SyncService {
                 ));
 
                 var products = shopifyProducts.stream()
-                        .map(shopifyProduct -> productService.convert(null, shopifyProduct, store, 9, null, null, null))
+                        .map(shopifyProduct -> productService.convert(null, shopifyProduct, store, 9, null, null))
                         .collect(Collectors.toList());
                 if (testMode)
                     continue;
